@@ -27,12 +27,19 @@ class LensModel(Protocol):
         tokenizer: Tokenizer used by the visualisation helpers; must provide
             ``decode(token_ids) -> str``. Fitting and :meth:`apply` never
             touch it.
+        embed_tokens: The input token embedding module. Its forward output
+            must be the tensor that enters ``layers[0]`` (for RoPE models the
+            residual stream carries no positional term, so this is the pure
+            token embedding). Used by :mod:`jlens.backward` as the graph root
+            for the embedding-to-layer Jacobian, and its ``.weight``
+            (``[vocab_size, d_model]``) as the decode basis for ghost logits.
     """
 
     n_layers: int
     d_model: int
     layers: Sequence[nn.Module]
     tokenizer: Any
+    embed_tokens: nn.Module
 
     def encode(self, text: str, *, max_length: int = ...) -> torch.Tensor:
         """Tokenize ``text`` to ``input_ids`` of shape ``[1, seq_len]`` on the

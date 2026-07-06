@@ -119,7 +119,7 @@ class HFLensModel:
         self._text_module = _resolve_attr_path(hf_model, layout.path)
         self.layers: nn.ModuleList = getattr(self._text_module, layout.layers)
         self._final_norm: nn.Module = getattr(self._text_module, layout.norm)
-        self._embed_tokens: nn.Module = getattr(self._text_module, layout.embed)
+        self.embed_tokens: nn.Module = getattr(self._text_module, layout.embed)
         self._lm_head: nn.Module = getattr(hf_model, layout.lm_head)
 
         text_config = hf_model.config.get_text_config()
@@ -152,7 +152,7 @@ class HFLensModel:
 
     @property
     def input_device(self) -> torch.device:
-        return self._embed_tokens.weight.device
+        return self.embed_tokens.weight.device
 
     def encode(self, text: str, *, max_length: int = 512) -> torch.Tensor:
         encoded = self.tokenizer(
