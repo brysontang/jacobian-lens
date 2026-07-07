@@ -71,8 +71,9 @@ prediction is their own continuation hold identity longer (the spelling
 effect), but modestly on English text.
 
 **4. Deep-layer ghost junk is output-flavored, gradedly** (`ghost_patch.py`,
-320 diverged positions × 3 conditions). Substituting a position's L23 ghost
-top-1 for its actual token preserves the model's prediction 15.0% vs 9.4%
+320 diverged positions × 3 conditions). Replacing a position's actual input
+token with its L23 ghost top-1 — the edit is to the *prompt*, then a full
+rerun — preserves the model's prediction 15.0% vs 9.4%
 (shuffled ghost, vocabulary-matched) vs 6.9% (random); paired z = 2.7 / 3.8.
 Stratified: mildly dissolved positions (actual's ghost rank < 100) preserve
 at 33% with median rank 4 — those ghosts are functional synonyms. Deeply

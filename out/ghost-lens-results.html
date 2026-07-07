@@ -244,7 +244,7 @@ a { color: var(--teal); }
 
 <div class="col">
   <p><strong>Do positions jump between the walls, or slide?</strong> Tracing every position through all nine sampled layers: input-identity release is a <em>snap</em> — 97% of wall-to-wall trips (held → dissolved) complete within a six-layer window, 52% within three, with departures synchronized at layers 17–20. Output convergence is a <em>climb</em> — transits spread over three to fifteen layers, with departures staggered from layer 2 onward. And the ordering is close to law-like: at <strong>78% of positions the prediction locks in before or at the same layer as the identity releases</strong> (output first 50%, same layer 28%, input first 22%). The migration hugs the bottom of the L20 panel because the model doesn't let go of a token until it has mostly decided what to say.</p>
-  <p><strong>Is deep-layer ghost "junk" meaningful?</strong> Causally, yes — gradedly. Substituting a position's L23 ghost top-1 for its actual input token and rerunning the model preserves the next-token prediction:</p>
+  <p><strong>Is deep-layer ghost "junk" meaningful?</strong> Causally, yes — gradedly. Take the prompt, replace a position's actual input token with its L23 ghost top-1 (the edit is to the <em>input text</em>, then a full rerun), and the next-token prediction at that position survives:</p>
   <div class="stat-row">
     <div class="stat"><div class="v teal">15.0%</div><div class="k">ghost substitution preserves top-1</div></div>
     <div class="stat"><div class="v">9.4%</div><div class="k">shuffled-ghost control (same junk vocabulary, wrong position)</div></div>

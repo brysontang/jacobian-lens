@@ -80,8 +80,9 @@ layers {2, 5, …, 26}; full numbers in [`out/ghost_results.json`](out/ghost_res
   Per-position hold duration does not predict per-position convergence timing
   (partial corr ≈ +0.06 after controls, [`out/pivot_analysis.py`](out/pivot_analysis.py));
   every position sheds input identity in the same L20–23 band.
-- **Deep-layer ghost "junk" is output-flavored — causally.** Substituting a
-  position's L23 ghost token for its real token preserves the model's
+- **Deep-layer ghost "junk" is output-flavored — causally.** Replacing a
+  position's real input token with its L23 ghost token (and rerunning the
+  model on the edited prompt) preserves the model's
   prediction 15% vs 9% (vocabulary-matched control) vs 7% (random); mildly
   dissolved ghosts are functional synonyms (33%, median rank 4), fully
   dissolved junk is a lossy shadow ([`out/ghost_patch.py`](out/ghost_patch.py)).
