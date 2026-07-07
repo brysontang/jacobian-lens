@@ -9,6 +9,7 @@ from jlens.fitting import fit, jacobian_for_prompt
 from jlens.hf import HFLensModel, Layout, from_hf
 from jlens.hooks import ActivationRecorder
 from jlens.lens import JacobianLens
+from jlens.offset import OffsetLens, fit_offset, offset_jacobian_for_prompt
 from jlens.protocol import LensModel
 
 __all__ = [
@@ -18,10 +19,13 @@ __all__ = [
     "JacobianLens",
     "Layout",
     "LensModel",
+    "OffsetLens",
     "backward_jacobian_for_prompt",
     "configure_logging",
     "fit",
     "fit_backward",
+    "fit_offset",
     "from_hf",
     "jacobian_for_prompt",
+    "offset_jacobian_for_prompt",
 ]

@@ -92,7 +92,7 @@ for pi, prompt in enumerate(prompts):
 
     for cond, subs in conds.items():
         seqs = ids[None, :].repeat(len(test_pos), 1).clone()
-        for i, (p, s) in enumerate(zip(test_pos, subs)):
+        for i, (p, s) in enumerate(zip(test_pos, subs, strict=True)):
             seqs[i, p] = s
         sub_logits = logits_at(seqs, test_pos)
         for i, p in enumerate(test_pos):
