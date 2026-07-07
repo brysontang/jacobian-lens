@@ -87,8 +87,13 @@ layers {2, 5, …, 26}; full numbers in [`out/ghost_results.json`](out/ghost_res
   dissolved junk is a lossy shadow ([`out/ghost_patch.py`](out/ghost_patch.py)).
 
 Code: [`jlens/backward.py`](jlens/backward.py) (estimator + `BackwardLens`,
-mirroring `fit()`/`JacobianLens`), fit/eval scripts and experiment notes in
-[`out/`](out/) ([`out/README-ghost.md`](out/README-ghost.md)).
+mirroring `fit()`/`JacobianLens`), [`jlens/offset.py`](jlens/offset.py) (the
+offset-resolved `K_Δ` variant: "what, and from where"), fit/eval scripts and
+experiment notes in [`out/`](out/) ([`out/README-ghost.md`](out/README-ghost.md)).
+The full interactive results page — charts, ghost grids, follow-up
+experiments — is self-contained at
+[`out/ghost-lens-results.html`](out/ghost-lens-results.html) (open locally in
+a browser).
 
 ```python
 from jlens.backward import BackwardLens, fit_backward

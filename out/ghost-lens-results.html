@@ -1,0 +1,480 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ghost-Token Lens — results</title>
+<style>
+:root {
+  --paper: #f6f7f9;
+  --panel: #ffffff;
+  --ink: #1b2026;
+  --muted: #5b6472;
+  --line: #d9dde3;
+  --teal: #0f766e;
+  --teal-soft: rgba(15, 118, 110, 0.12);
+  --amber: #b45309;
+  --amber-soft: rgba(180, 83, 9, 0.12);
+  --violet: #6d5bd0;
+  --violet-soft: rgba(109, 91, 208, 0.14);
+  --grid: #e4e7ec;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12151a;
+    --panel: #1a1e25;
+    --ink: #e8eaf0;
+    --muted: #98a1b0;
+    --line: #2c323c;
+    --teal: #2dd4bf;
+    --teal-soft: rgba(45, 212, 191, 0.14);
+    --amber: #f5a623;
+    --amber-soft: rgba(245, 166, 35, 0.13);
+    --violet: #a78bfa;
+    --violet-soft: rgba(167, 139, 250, 0.16);
+    --grid: #262c36;
+  }
+}
+:root[data-theme="light"], [data-theme="light"] {
+  --paper: #f6f7f9; --panel: #ffffff; --ink: #1b2026; --muted: #5b6472;
+  --line: #d9dde3; --teal: #0f766e; --teal-soft: rgba(15,118,110,.12);
+  --amber: #b45309; --amber-soft: rgba(180,83,9,.12);
+  --violet: #6d5bd0; --violet-soft: rgba(109,91,208,.14); --grid: #e4e7ec;
+}
+:root[data-theme="dark"], [data-theme="dark"] {
+  --paper: #12151a; --panel: #1a1e25; --ink: #e8eaf0; --muted: #98a1b0;
+  --line: #2c323c; --teal: #2dd4bf; --teal-soft: rgba(45,212,191,.14);
+  --amber: #f5a623; --amber-soft: rgba(245,166,35,.13);
+  --violet: #a78bfa; --violet-soft: rgba(167,139,250,.16); --grid: #262c36;
+}
+html, body { background: var(--paper); margin: 0; padding: 0; }
+body {
+  font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+  color: var(--ink);
+  line-height: 1.62;
+}
+.page {
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100dvh;
+  padding: 3.5rem 1.25rem 5rem;
+}
+.col { max-width: 720px; margin: 0 auto; }
+.wide { max-width: 940px; margin: 2rem auto; }
+.mono, code {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+code { font-size: 0.86em; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0.05em 0.3em; }
+.eyebrow {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--teal); margin: 0 0 0.9rem;
+}
+h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1.12; font-weight: 600;
+  letter-spacing: -0.01em; margin: 0 0 0.9rem; text-wrap: balance;
+}
+.dek { font-size: 1.13rem; color: var(--muted); margin: 0 0 1.2rem; text-wrap: balance; }
+.meta {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.78rem; color: var(--muted);
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 0.7rem 0; margin-bottom: 2.5rem;
+}
+h2 {
+  font-size: 1.45rem; font-weight: 600; letter-spacing: -0.005em;
+  margin: 3rem 0 0.8rem; text-wrap: balance;
+}
+h2 .no { color: var(--muted); font-weight: 400; }
+p { margin: 0 0 1rem; }
+.note { font-size: 0.92rem; color: var(--muted); }
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 1.1rem 1.2rem;
+}
+.legend {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.75rem;
+  color: var(--muted); margin: 0.6rem 0 0.2rem;
+}
+.legend .sw { display: inline-block; width: 1.4em; height: 0.55em; border-radius: 2px; margin-right: 0.45em; vertical-align: baseline; }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: ui-monospace, "SF Mono", Menlo, monospace; fill: var(--muted); }
+.scroller { overflow-x: auto; }
+.faces { display: flex; gap: 1rem; align-items: flex-start; padding-bottom: 0.5rem; }
+.face { flex: 0 0 auto; }
+.face h3 {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  margin: 0 0 0.4rem; color: var(--muted);
+}
+.face h3.ok { color: var(--teal); }
+.face h3.gone { color: var(--violet); }
+.face pre {
+  margin: 0; font-size: 0.72rem; line-height: 1.45;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 0.8rem 0.9rem; white-space: pre;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+table.grid {
+  border-collapse: collapse;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.72rem;
+}
+table.grid th, table.grid td {
+  padding: 0.28rem 0.42rem; white-space: pre; text-align: left;
+  border-bottom: 1px solid var(--grid);
+}
+table.grid th {
+  font-weight: 600; color: var(--muted); position: sticky; left: 0;
+  background: var(--paper); font-size: 0.7rem;
+}
+td.self { color: var(--ink); }
+td.mv { background: var(--amber-soft); color: var(--amber); }
+td.nv { background: var(--violet-soft); color: var(--violet); }
+td.in { font-weight: 600; }
+.swaps { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; margin: 1rem 0; }
+.swap {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.78rem;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 0.55rem 0.7rem;
+}
+.swap .from { color: var(--muted); }
+.swap .to { color: var(--teal); font-weight: 600; }
+.swap .lay { float: right; color: var(--muted); font-size: 0.68rem; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; margin: 1.4rem 0; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 0.8rem 1rem; }
+.stat .v { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat .v.teal { color: var(--teal); } .stat .v.amber { color: var(--amber); } .stat .v.violet { color: var(--violet); }
+.stat .k { font-size: 0.78rem; color: var(--muted); line-height: 1.4; margin-top: 0.15rem; }
+ul { padding-left: 1.2rem; }
+li { margin-bottom: 0.45rem; }
+a { color: var(--teal); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="page">
+<div class="col">
+  <p class="eyebrow">Experiment · Jacobian lens, inverted</p>
+  <h1>The Ghost-Token Lens</h1>
+  <p class="dek">Running Anthropic's Jacobian lens backward: instead of asking what a residual-stream state is disposed to <em>say</em>, ask what the input would have had to be to produce it.</p>
+  <div class="meta">
+    <span>Qwen3-0.6B · 28 layers</span>
+    <span>K<sub>ℓ</sub> = E[∂h<sub>ℓ</sub>/∂emb], 24 WikiText prompts</span>
+    <span>eval: 8 held-out prompts</span>
+    <span>2026-07-07</span>
+  </div>
+
+  <p>The forward lens reads <code>unembed(J·h)</code> — a next-token disposition. Here we fit the mirror-image Jacobian <code>K = E[∂h/∂emb]</code> and decode a residual vector <code>h</code> by <em>enumerating the vocabulary</em>: score each token by <code>⟨h, K·e_v⟩ − ½‖K·e_v‖²</code>, i.e. find the input embedding whose forward image under the average linearized dynamics lands nearest to <code>h</code>. No matrix inversion, no SVD cutoff — the readout is well-posed by construction. The result is a <strong>ghost input</strong>: not a causal reconstruction, but the "as-if context" the state is behaving as though it received.</p>
+
+  <h2>1 &nbsp;<span class="no">/</span>&nbsp; Input identity survives to layer 20, then hands off to the output</h2>
+  <p>At each layer we ask: what rank does the <em>actual</em> input token get under the ghost readout? And symmetrically for the forward lens: what rank does the model's final next-token prediction get? Held-out WikiText, 8 prompts, ~880 positions per layer.</p>
+</div>
+
+<div class="wide">
+  <div class="panel">
+    <div id="chart-acc"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--teal)"></span>ghost lens: top-1 recovers actual input token</span>
+      <span><span class="sw" style="background:var(--amber)"></span>forward lens: top-1 matches model's final prediction</span>
+      <span><span class="sw" style="background:var(--muted);opacity:.5"></span>baseline (no Jacobian): raw embedding match</span>
+    </div>
+  </div>
+</div>
+
+<div class="col">
+  <div class="stat-row">
+    <div class="stat"><div class="v teal">93%</div><div class="k">ghost top-1 at layer 2</div></div>
+    <div class="stat"><div class="v teal">74%</div><div class="k">still top-1 at layer 17 (median rank 0)</div></div>
+    <div class="stat"><div class="v">L20→23</div><div class="k">the handoff: ghost median rank 2 → 6 109; forward 15 → 2</div></div>
+    <div class="stat"><div class="v amber">70%</div><div class="k">forward top-1 at layer 26</div></div>
+  </div>
+  <p>The two curves cross between layers 20 and 23 — roughly 75–80% of the way through the network. Before that point the residual stream is still, in a linear-readout sense, <em>about its input</em>; after it, it's about the output. The baseline (matching <code>h</code> directly against raw embeddings, no Jacobian) sits at ~0% with median ranks in the tens of thousands at every layer: the Jacobian is carrying all of the signal, not the embedding geometry.</p>
+  <p class="note">Curious wrinkle: the curve is non-monotonic — a dip at layer 8 (49%) before recovering to 65–74% at layers 11–17. Consistent with an early "detokenization" phase that temporarily moves the state off the input manifold before mid-network processing settles it back.</p>
+
+  <h2>2 &nbsp;<span class="no">/</span>&nbsp; Nothing moves. It dissolves in place.</h2>
+  <p>The original question: after self-attention mixes tokens together, is the model <em>rearranging</em> its sentence — does position <em>p</em> start holding a token from elsewhere in the prompt? We classify each position's ghost top-1 as <strong>self</strong> (the token that's actually there), <strong>moved</strong> (a token from elsewhere in the prompt), or <strong>novel</strong> (not in the prompt at all).</p>
+</div>
+
+<div class="wide">
+  <div class="panel">
+    <div id="chart-bars"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--teal)"></span>self — ghost is the actual token here</span>
+      <span><span class="sw" style="background:var(--amber)"></span>moved — a token from elsewhere in the prompt</span>
+      <span><span class="sw" style="background:var(--violet)"></span>novel — a token not in the prompt</span>
+    </div>
+  </div>
+</div>
+
+<div class="col">
+  <p><strong>"Moved" never exceeds 4% at any layer, in either prompt.</strong> The answer to the rearrangement question is a clean no — at least under the averaged linear readout, the residual stream never impersonates a shuffled version of its context. When a position stops holding its own token, it doesn't pick up a neighbor's; it drifts to something <em>outside the prompt entirely</em>. Identity is lost by dissolution, not permutation.</p>
+
+  <h2>3 &nbsp;<span class="no">/</span>&nbsp; The face survives to layer 20</h2>
+  <p>The repo's ASCII-face prompt, reconstructed from each layer's ghost top-1 tokens. The structural tokens — bars, parens, the <code>^</code> nose — are recovered essentially verbatim through layer 20 (the <code>^</code> stays a <code>^</code>; it never becomes "nose"). Then, over three layers, the whole drawing dissolves into an attractor soup: <code>.INSTANCE</code>, <code>PasswordEncoder</code>, zero-width spaces.</p>
+</div>
+
+<div class="wide scroller">
+  <div class="faces" id="faces"></div>
+</div>
+
+<div class="col">
+  <h2>4 &nbsp;<span class="no">/</span>&nbsp; The French prompt drifts across languages</h2>
+  <p>A French paragraph about the old port of Marseille. Where the ghost input diverges from the actual token, it often lands on a <em>translation</em> — the as-if input preserves the meaning while shedding the surface language:</p>
+  <div class="swaps" id="swaps"></div>
+  <p>By layer 23 the readout collapses onto a semantic attractor: <code>mercado</code> — Spanish for "market" — becomes the ghost token at seven scattered positions of a paragraph about merchants, stalls, and a port. The state remembers it's about a market; it no longer remembers which words, or which language, said so.</p>
+</div>
+
+<div class="wide">
+  <div class="panel scroller">
+    <table class="grid" id="french-grid"></table>
+  </div>
+  <p class="note" style="max-width:720px;margin:0.8rem auto 0;">Ghost top-1 per layer for tokens 20–47 of the French prompt. Plain = self, <span style="color:var(--amber)">amber</span> = moved from elsewhere in the prompt, <span style="color:var(--violet)">violet</span> = novel. First row is the actual input.</p>
+</div>
+
+<div class="col">
+  <h2>5 &nbsp;<span class="no">/</span>&nbsp; Follow-ups: the rigor pass</h2>
+  <p><strong>Is the handoff a per-token trigger?</strong> No. On 888 held-out positions, how long a position holds its input token does not predict when it converges on its prediction (partial correlation +0.06 after controlling for word-continuation status and prediction confidence). At matched layers the coupling is <em>negative</em>: positions still holding their token are also <em>closer</em> to converged — both readouts succeed or fail together, suggesting a shared per-position linearization-quality factor. The handoff is a network-wide regime change in the L20–23 band, not a chain of individual releases.</p>
+</div>
+
+<div class="wide">
+  <div class="panel">
+    <div id="chart-scatter"></div>
+  </div>
+  <p class="note" style="max-width:720px;margin:0.8rem auto 0;">Each dot is one held-out position. Down-and-left = input token still held <em>and</em> prediction nearly converged. The downward tilt at L14–L20 is the negative coupling: stability and predictive convergence travel together. By L23 the input axis has collapsed (the cloud slides right) and the coupling dissolves with it.</p>
+</div>
+
+<div class="col">
+  <p><strong>Do positions jump between the walls, or slide?</strong> Tracing every position through all nine sampled layers: input-identity release is a <em>snap</em> — 97% of wall-to-wall trips (held → dissolved) complete within a six-layer window, 52% within three, with departures synchronized at layers 17–20. Output convergence is a <em>climb</em> — transits spread over three to fifteen layers, with departures staggered from layer 2 onward. And the ordering is close to law-like: at <strong>78% of positions the prediction locks in before or at the same layer as the identity releases</strong> (output first 50%, same layer 28%, input first 22%). The migration hugs the bottom of the L20 panel because the model doesn't let go of a token until it has mostly decided what to say.</p>
+  <p><strong>Is deep-layer ghost "junk" meaningful?</strong> Causally, yes — gradedly. Substituting a position's L23 ghost top-1 for its actual input token and rerunning the model preserves the next-token prediction:</p>
+  <div class="stat-row">
+    <div class="stat"><div class="v teal">15.0%</div><div class="k">ghost substitution preserves top-1</div></div>
+    <div class="stat"><div class="v">9.4%</div><div class="k">shuffled-ghost control (same junk vocabulary, wrong position)</div></div>
+    <div class="stat"><div class="v">6.9%</div><div class="k">random-token control</div></div>
+    <div class="stat"><div class="v teal">33%</div><div class="k">for mildly dissolved positions (median rank 4) — those ghosts are functional synonyms</div></div>
+  </div>
+  <p>Paired significance z = 2.7 vs shuffled, 3.8 vs random (320 positions). The gradient matters: near-miss ghosts (<span class="mono">marks → marking</span>) are working substitutes the model accepts; fully dissolved junk barely beats control. By L23 the state has rotated off the input manifold — it still <em>leans</em> toward its output (ghosts drift toward "the input that would have caused this prediction"), but the information no longer compresses into any single vocabulary token.</p>
+
+  <h2>Caveats &amp; next</h2>
+  <ul>
+    <li><strong>Not causal.</strong> K is an <em>average</em> Jacobian over 24 WikiText prompts; the ghost input is the nearest preimage under mean linearized dynamics, not a claim about what the network actually received.</li>
+    <li><strong>One model, one seed.</strong> Qwen3-0.6B, layers {2,5,…,26}. Qwen3.5-2B was benchmarked and rejected (fp16 gradients NaN past layer 20 on its hybrid linear-attention fallback; &gt;24 h fit on this machine).</li>
+    <li><strong>Deep-layer dissolution is metric-robust.</strong> A single-prompt probe confirmed l2, dot, and cosine readouts all agree at layer 26 — the identity loss is real, not an artifact of the −½‖Ke_v‖² norm term.</li>
+    <li><strong>Next: offset-resolved K<sub>Δ</sub></strong> — one matrix per lookback distance, <code>K_Δ = E[∂h_l[p+Δ]/∂emb[p]]</code>, giving each position a ghost <em>profile over distance</em>: "what, and from where." This is the cross-position instrument that sections 2 and 5 lacked — fit in progress.</li>
+  </ul>
+  <p class="note">Code: <span class="mono">brysontang/jacobian-lens</span>, branch <span class="mono">backward-lens</span> — <span class="mono">jlens/backward.py</span>, fit/eval scripts in <span class="mono">out/</span>. Companion to Anthropic's "Verbalizable Representations Form a Global Workspace in Language Models."</p>
+</div>
+</div>
+
+<script>
+const DATA = {"model":"Qwen/Qwen3-0.6B","n_fit_prompts":24,"backward_layers":[2,5,8,11,14,17,20,23,26],"forward_layers":[2,5,8,11,14,17,20,23,26],"retention":{"backward":{"2":{"top1_acc":0.9313063025474548,"top10_acc":0.9831081032752991,"median_rank":0.0,"mean_log10_rank":0.0581708587706089,"n":888},"5":{"top1_acc":0.6103603839874268,"top10_acc":0.8738738894462585,"median_rank":0.0,"mean_log10_rank":0.35590019822120667,"n":888},"8":{"top1_acc":0.4887387454509735,"top10_acc":0.7398648858070374,"median_rank":1.0,"mean_log10_rank":0.6298291087150574,"n":888},"11":{"top1_acc":0.6542792916297913,"top10_acc":0.9425675868988037,"median_rank":0.0,"mean_log10_rank":0.2113465666770935,"n":888},"14":{"top1_acc":0.5619369149208069,"top10_acc":0.8862612843513489,"median_rank":0.0,"mean_log10_rank":0.3453699052333832,"n":888},"17":{"top1_acc":0.7353603839874268,"top10_acc":0.9515765905380249,"median_rank":0.0,"mean_log10_rank":0.17707358300685883,"n":888},"20":{"top1_acc":0.375,"top10_acc":0.6418918967247009,"median_rank":2.0,"mean_log10_rank":0.9868645668029785,"n":888},"23":{"top1_acc":0.05968468636274338,"top10_acc":0.1689189225435257,"median_rank":6109.0,"mean_log10_rank":3.121349334716797,"n":888},"26":{"top1_acc":0.0,"top10_acc":0.0022522523067891598,"median_rank":27015.0,"mean_log10_rank":4.38734245300293,"n":888}},"baseline":{"2":{"top1_acc":0.011261261068284512,"top10_acc":0.04729729890823364,"median_rank":12420.0,"mean_log10_rank":3.7223989963531494,"n":888},"5":{"top1_acc":0.0011261261533945799,"top10_acc":0.012387387454509735,"median_rank":23944.0,"mean_log10_rank":4.066646099090576,"n":888},"8":{"top1_acc":0.0011261261533945799,"top10_acc":0.012387387454509735,"median_rank":18276.0,"mean_log10_rank":3.9845364093780518,"n":888},"11":{"top1_acc":0.0,"top10_acc":0.0045045046135783195,"median_rank":29257.0,"mean_log10_rank":4.2243733406066895,"n":888},"14":{"top1_acc":0.0,"top10_acc":0.005630630534142256,"median_rank":24595.0,"mean_log10_rank":4.19307279586792,"n":888},"17":{"top1_acc":0.0,"top10_acc":0.0045045046135783195,"median_rank":34704.0,"mean_log10_rank":4.2801971435546875,"n":888},"20":{"top1_acc":0.0011261261533945799,"top10_acc":0.007882882840931416,"median_rank":55872.0,"mean_log10_rank":4.3946709632873535,"n":888},"23":{"top1_acc":0.0011261261533945799,"top10_acc":0.009009009227156639,"median_rank":81198.0,"mean_log10_rank":4.515786647796631,"n":888},"26":{"top1_acc":0.0011261261533945799,"top10_acc":0.0022522523067891598,"median_rank":100135.0,"mean_log10_rank":4.739925384521484,"n":888}},"forward":{"2":{"top1_acc":0.0011261261533945799,"top10_acc":0.010135134682059288,"median_rank":4410.0,"mean_log10_rank":3.5326433181762695,"n":888},"5":{"top1_acc":0.0033783784601837397,"top10_acc":0.02477477490901947,"median_rank":1684.0,"mean_log10_rank":3.1732354164123535,"n":888},"8":{"top1_acc":0.007882882840931416,"top10_acc":0.027027027681469917,"median_rank":1398.0,"mean_log10_rank":3.083096504211426,"n":888},"11":{"top1_acc":0.011261261068284512,"top10_acc":0.028153153136372566,"median_rank":2461.0,"mean_log10_rank":3.2630763053894043,"n":888},"14":{"top1_acc":0.012387387454509735,"top10_acc":0.04279279336333275,"median_rank":1847.0,"mean_log10_rank":3.1161816120147705,"n":888},"17":{"top1_acc":0.03153153136372566,"top10_acc":0.10698198527097702,"median_rank":545.0,"mean_log10_rank":2.573875665664673,"n":888},"20":{"top1_acc":0.1295045018196106,"top10_acc":0.434684693813324,"median_rank":15.0,"mean_log10_rank":1.359870433807373,"n":888},"23":{"top1_acc":0.3558558523654938,"top10_acc":0.6722972989082336,"median_rank":2.0,"mean_log10_rank":0.7749621868133545,"n":888},"26":{"top1_acc":0.704954981803894,"top10_acc":0.9752252101898193,"median_rank":0.0,"mean_log10_rank":0.14991503953933716,"n":888}}},"ascii_face":{"input_tokens":["    "," ______","_","     \n","  "," /","        "," \\","   \n"," "," /"," "," ~","    "," ~"," "," \\","  \n"," (","  "," o","    "," o","  "," )"," \n"," |","     "," ^","     "," |"," \n"," |","            "," |"," \n"," |","  "," \\","____","_/","  "," |"," \n"," "," \\","          "," /","  \n","  "," \\","________","_/","   \n","     "," |","  "," |","      \n\n","What"," is"," this","?"],"ghost_top1":{"2":["érer"," ______","_","     \n","  "," /","        "," \\","   \n"," "," /"," "," ~","    "," ~"," "," \\","  \n"," (\n\n","  "," o","    "," o","  "," )"," \n"," |","     "," ^","     "," |"," \n"," |","            "," |"," \n"," |","  "," \\","____","_/","  "," |"," \n"," "," \\","          "," /","  \n","  "," \\","________","_/","   \n","     "," |","  "," |","      \n\n"," What"," is"," this","?"],"5":[" però"," ______","___","     \n","  "," /","        "," \\","   \n"," "," /"," "," ~","    "," ~"," "," \\","  \n"," )(","  "," o","    "," o","  "," )"," \n\t\n"," |","     "," ^","     "," |"," \n"," |","            "," |"," \n"," |","  "," \\","____","_/","  "," |"," \n"," "," \\","          "," /","  \n","  "," \\","________","_/","   \n","     "," |","  "," |","?!\n\n"," What"," Is"," this","?"],"8":["emme"," ______"," ___","     \n","  "," /","        "," \\","   \r\n"," Yes"," /"," "," ~","    "," ~"," "," \\","  \n"," )(","  "," o","    "," o","  "," )"," \n"," |","     "," ^","     "," |"," +\n"," |","            "," |"," /\n"," |","  "," \\\n\n","____","+'/","  "," |","\n\t\t\t\n"," "," \\","          "," /","\n\t\t\t\n","  "," \\","________","_/","\n\t\t\t\n","     "," |","  "," |","\n\t\t\t\n","what"," Is","_THIS","?"],"11":[" ​​"," ______","_","     \n","  "," /","        "," \\","\n   \n"," "," /"," "," ~","    "," ~"," "," \\","  \n"," )(","  "," o","    "," o","  "," )"," \n"," |","     "," ^","     "," |"," \n"," |","            "," |"," \n"," |","  "," \\","____","-/","  "," |"," \n"," "," \\","          "," /","  \n","  "," \\","________","_/","   \n","     "," |","  "," |","\n\t\t\t\t\n","what",",is"," this","？"],"14":["eso"," ______","本","     \n","  "," /","        "," \\","\n   \n"," "," /"," "," ~","    "," ~"," "," \\","  \n"," )(","  "," o","    "," o","  "," )"," \n"," |","     "," ^","     "," |"," \n"," |","            "," |"," \n"," |","  "," \\","____","-/","  "," |"," \n"," "," \\","          "," /","  \n","  "," \\","________","_/","   \n","     "," |","  "," |","\n\t\t\t\t\n","what"," Is",".this","？"],"17":["oki"," ______","_____","     \n","  "," /","        "," \\","   \n"," "," /"," "," ~","    "," ~"," "," \\","  \n"," (","  "," o","    "," o","  "," )"," \n"," |","     "," ^","     "," |"," \n"," |","            "," |"," \n"," |","  "," \\","____","_/","  "," |"," \n"," "," \\","          "," /","  \n","  "," \\","________","_/","   \n","     "," |","  "," |","      \n\n","what"," is",".this","?"],"20":[" Rivera"," ______","Keywords","     \n","  "," /","/Grid"," '\\'","   \n","用"," /","/her"," ~","    "," ~"," \"()"," \\\n\n","  \n"," (","  "," o","    "," o","  "," )"," \n"," |","     "," ^","     "," |"," \n"," |","            "," |","不排除"," |","  ","\\param","____","+'/","  "," |"," \n","的"," \\","          "," /","  \n","  ","\\n","________","+'/","   \n","     "," |","  "," |","akedirs","what","atsapp","ейчас","?!"],"23":[" PMC"," PMC"," ​​","ebra"," ​​","자의","자의","ValuePair","utomation","يا","razil","razil","最基本",".INSTANCE","مى","자의","微观","razil",".pattern"," ​​","ово","자의","utomation","자의","ebra","يا","/include","EDA","مى"," )))",".Sdk","يا","myModal"," IDS",".Sdk","最基本的",".Sdk","EDA","자의","____","IVA","자의","/include","/include"," Keywords","자의","\\Framework","/include","  \n","자의",".Sdk",".deepcopy","万个","最基本的","EDA",".Sdk","万个","MZ",".Sdk",".Sdk","razil","razil",".Sdk"],"26":[" ​​"," ​​"," ​​"," ​​"," ​​","中华民族"," ​​"," membranes"," membranes"," ​​"," DateTimeKind"," ​​"," membranes",".INSTANCE","iming"," ​​"," coppia"," ​​"," coppia"," ​​","iming",".INSTANCE","iming",".INSTANCE",".INSTANCE","全社会",".INSTANCE"," ​​"," Beijing","PasswordEncoder","OperationException"," ​​"," DateTimeKind",".INSTANCE","OperationException"," ​​","中华民族"," ​​",".INSTANCE"," ​​","全社会"," ​​","PasswordEncoder"," ​​"," Definitely","中华民族"," Definitely","全社会"," Definitely"," Definitely",".INSTANCE"," Beijing"," ​​"," ​​"," ​​"," Beijing"," ​​"," ​​"," ​​"," ​​"," ​​"," ​​"," ​​"]},"actual_rank":{"2":[39364,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],"5":[62356,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,3,6,0,0],"8":[113189,0,21,0,0,0,0,0,2,1,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,4,0,0,1,0,2,0,0,10,0,0,0,0,1,0,0,0,0,2,0,0,0,0,44,5,8,2,0],"11":[91179,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,3,1,0,1],"14":[97510,0,4,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,3,1,2,1],"17":[113330,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,0],"20":[117432,0,223,0,0,0,1,3,0,2,0,42,0,0,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,0,0,1,0,1,0,0,0,1,0,0,0,0,0,6,0,1,0,0,0,0,0,336,2,24,482,1],"23":[110680,1573,25313,2022,2494,1160,921,68750,1726,661,10710,7620,2197,561,954,175,47992,549,21449,135,74,14,677,76,844,13565,41,17,1,115,3041,15425,1253,663,2068,22334,1062,646,41617,0,14574,355,789,12646,399,33767,88,21,0,298,58060,95,45242,72,1206,24,69,840,36284,2298,22874,45127,3033],"26":[88252,14846,70781,19775,24387,8309,74270,66447,25906,8258,15396,6617,19030,20935,28730,3899,57217,16951,23433,8490,22835,15714,38794,16329,4354,37816,30797,13975,21184,26713,52562,32814,32592,56350,45188,39797,40259,15224,40505,193,81285,25398,51466,37961,8574,38130,46522,5731,4707,14148,44015,57665,103900,16669,27038,23927,12974,40523,57119,53720,14758,24007,26507]},"forward_top1":{"2":["—to"," ______"," ___","     \n","  "," /","        "," \\","   \n","  "," /"," .\n"," ~","    "," ~"," .\n"," \\","  \n"," )","  "," oa","    "," ”","  "," ："," \n"," |","    "," ^"," ,\n"," |"," \n"," |"," ,\r\n"," |"," \n"," |","  "," \\","____"," —\n\n","  "," |"," \n"," .\n"," \\","      "," /\n","  \n","  "," \\","________","_/","   \n","    "," |","  "," |"," \n\n",":\n\n\n"," \"\""," :\r\n","?\r\n"],"5":["archical"," ______"," ___","     \n","  ","!<\/","        "," \\","   \n"," ’"," /"," "," ~","    "," ~"," "," \\","  \n"," ').","  "," oa","    ","!”","  ","ing"," \n"," |","    "," ^","    "," |"," \n"," |","\";\r\n"," |"," \n"," |","  "," \\","____","-/","  "," |"," \n"," ’"," \\","      ","/\r\n","  \n","  "," \\","________","-/","   \n","    "," |","  "," |","  \n",":\n"," \"",",\"","?\r\n"],"8":["]**"," ______"," ___","     \n","  ","!<\/","        ","\\db","   \n"," ’","!”"," ’"," ~","    ","~\n\n","!\n\n"," \\","  \n"," ')","  ","!”","\")\n\n","”\n\n","  "," ,\n\n"," \n"," |","     "," ^","     \n"," |\n"," \n"," |","\"\r\n"," |\n\n"," \n\n"," |","  "," \\\n","**\n"," \n","  "," |\n"," \n\n"," ’"," Github","      ","\r\n\r\n","  \n","  "," \\\n","__)\n","_\n","   \n","     "," |\n","  "," |\n",":**",":\n"," \"\";\n","--[","?"],"11":["-signed"," ______"," ___","     \n","  ","slash","        "," |\\","   \n"," Node","/fw"," trees"," ~","     \n","\n","  \n","\n","  \n"," Pac","  "," oo","\")\n","”\n\n","”\n\n"," .\n\n"," \n"," |","     "," ^","     \n"," |\n"," \n"," |","\")\r\n"," |\n\n"," _|"," |","  "," |\\","**\n","_\n","  "," |\n"," ASCII","ada","issippi","'''\n\n","/\r\n","  \n","  ","\\\\\\","**\n","_\n","   \n","      "," |\n","  "," |\n"," ASCII",")?\n","?\"\n","?\",","?"],"14":["ifax"," ______"," ___","     \n","  ","粑","        "," \\\n","   \n"," Nodes"," Slash","?”"," ~","     \n","\n","  \n"," \\\n","  \n","uras","  "," mama","\")\n\n","”\n\n"," \"\n"," \n    \n"," \n"," |","     "," |\n\n","**\n"," |\n"," \n\n"," |","**\r\n"," |\n\n","屏幕"," |","  "," \\\n","**\n","_\n","   \n"," |\n"," ASCII","']\n\n","妹","']\n\n","）\r\n","）\n\n","  ","妹","**\n","_\n","   \n","      "," |\n","  "," |\n","**\n\n","?\n\n","?\"\n","?\n\n","?\n\n"],"17":["难关"," ______"," ___","     \n","      ",":/","        ","        \n","      "," Nodes","/Linux","     "," ->","      "," |\n","       ","    \n","  \n\n","INUX","     ",".gif","     "," |\n","      "," ,\n","     \n"," |","     "," (^","\"]\n"," |\n"," \n\n"," |","\"]\n"," |\n"," \n\n"," |","     ","INUX","____"," \\\n","      "," |\n"," \n\n","弯","vron","      ","(\"/\")\n","  \n\n","    "," terminal","__(","”\n\n","   \n","      "," |","  "," |\n","**\n\n","?\n","?\n","?\n\n","?\n\n"],"20":["襟","___"," ___","     \n"," <!--","\\/\\/","     \n","\n","   "," //","        ","         ","~~~~","    ","++\n","_)\n"," \\\\\n","  \n\n","_)"," )"," _)","    "," )"," )\n","()\n","     "," |\n","     ","_^"," |\n"," |\n"," \n\n","         "," |\n"," |\n","\"\"\"\n\n","            ","  ","      ","__","_/"," |\n"," |\n","---\n\n","|\n\n","(\\"," |\n","++\n","  \n\n","/\r\n\r\n","         ","__(","  \n\n","  \n\n","  \n\n"," |","  "," |\n","---\n\n","?\n\n"," the","?\n\n","?\n\n"],"23":["<|endoftext|>","___"," ___","|"," *","      "," |\n","\n","  "," /","         "," ______","--------"," /","  "," /\n"," \n","_/","())"," )","  "," o","  "," )","/\n","|","                  "," |","     "," |\n"," \n"," |","     "," |\n"," \n"," |\n\n","-------------"," o","        ","_/","  "," |\n"," \n"," |"," |","____"," /\n"," \n","  "," ----------------","________","_/","  \n\n","\"\"\"\n\n"," ___","      "," |\n","    \n","This"," is"," the","?\n\n"," It"],"26":[".","___"," ______","|"," ______","        "," \\","  ","  "," /","        "," ______","        "," ~","  "," \\","   \n","  ","  "," )","  "," o","  "," )"," \n"," ","            "," |","     "," |\n","  \n"," \\","     "," |"," \n"," \\","            "," o","        ","___","  "," |"," \n"," \\"," \\","  "," /"," \n","  "," \\","        ","/","  ","   "," \\","        "," |","  ","This"," is"," the"," image"," It"],"final":[" *","_",".\n\n","|"," |","  "," \\","  "," "," /","        "," ","        "," ~","  "," \\","  \n"," "," "," )"," "," o","  "," )","  \n"," "," "," |","     "," |","  \n"," |","     "," |"," \n"," \\","            "," _","        ","___","  "," |"," \n"," |"," \\","  "," |"," \n","  "," \\","____","/","  \n","   "," _","     "," |","  ","This"," is"," the"," code"," It"]},"cross_position":{"2":{"self":0.9574468085106383,"moved":0.0,"novel":0.0425531914893617},"5":{"self":0.8936170212765957,"moved":0.0,"novel":0.10638297872340426},"8":{"self":0.7446808510638298,"moved":0.0,"novel":0.2553191489361702},"11":{"self":0.8723404255319149,"moved":0.0,"novel":0.1276595744680851},"14":{"self":0.851063829787234,"moved":0.0,"novel":0.14893617021276595},"17":{"self":0.9574468085106383,"moved":0.0,"novel":0.0425531914893617},"20":{"self":0.7446808510638298,"moved":0.0,"novel":0.2553191489361702},"23":{"self":0.0425531914893617,"moved":0.0,"novel":0.9574468085106383},"26":{"self":0.0,"moved":0.0,"novel":1.0}}},"french":{"input_tokens":["Le"," vieux"," port"," de"," Marseille"," est"," le"," plus"," anc","ien"," quart","ier"," de"," la"," ville","."," Les"," b","ate","aux"," de"," p","ê","che"," rent","rent"," chaque"," mat","in"," avec"," leur"," carg","aison",","," et"," les"," march","ands"," install","ent"," leurs"," ét","als"," le"," long"," du"," qu","ai","."," Les"," tourist","es"," se"," prom","è","n","ent"," entre"," les"," caf","és"," et"," les"," restaurants",","," tand","is"," que"," les"," mou","ettes"," t","ourn","ent"," au","-dess","us"," de"," l","'eau"," cl","aire"," du"," bass","in","."],"ghost_top1":{"2":["érer"," vieux"," port"," de"," Marseille"," était"," le"," plus"," anc","옄"," quart","ier"," de"," della"," ville","."," Les"," b","ate","🐃"," de"," p","ê","쎼"," rent","rent"," chaque"," mat"," in"," avec"," leur"," carg","aison","，"," và"," les"," march","ands"," install"," иност"," leurs"," ét"," était"," le"," long"," du"," qu"," qu","."," Les"," tourist","<|im_end|>"," se"," prom","è","ᩁ","ᩁ"," entre"," les"," caf"," caf"," và"," les"," restaurants","，"," tand","فناد"," que"," les"," mou","ﮯ"," t","ourn","ᩁ"," au","-dess","𒄷"," de"," l","'eau"," cl"," לא"," du"," bass","𝘉","."],"5":[" però"," vieux"," port"," de"," Marseille"," était"," le"," más"," anc"," older"," quart","<|im_end|>"," de"," della"," ville","也让"," les"," b","ate"," boats"," de"," p","ê","홰"," rent"," Rent"," chaque"," mat"," mornings"," avec","their"," carg","aison","也让"," và"," les"," march"," marché"," install"," incluso"," leurs"," ét","вшис"," le"," long"," delve"," qu"," quoi"," incluso"," les"," tourist","<|im_end|>"," se"," prom","è"," даже"," parted"," entre"," les"," caf"," café"," và"," les"," restaurants"," cũng"," tand"," mentre"," mentre"," les"," mou","ettes"," t","ourn","-turned"," au","-dess"," través"," de"," dell","'eau"," cl"," clearly"," du"," bass","<|im_end|>"," incluso"],"8":["emme"," vieux"," port"," de"," Marseille"," però"," nel"," más"," anc","aison"," quart"," péri"," de"," della"," ville"," incluso"," les"," b","ate"," boats"," de"," p","ê"," dive"," rent"," Rent"," chaque"," mat"," mornings"," WITH","Their"," carg","aison"," également"," và"," les"," march"," merchants"," install"," incluso"," leurs"," ét"," alles"," le"," long"," delve"," qu","oui"," incluso"," les"," tourist"," però"," se"," prom","è"," stormed","ходят"," entre"," les"," caf"," både"," và"," leurs"," restaurants"," però"," tand"," mentre"," mentre"," les"," mou"," beide"," t","ourn"," ran"," au","-dess"," través"," מעל"," dell","'eau"," cl"," clear"," du"," bass"," же","再次"],"11":[" ​​"," vieux"," port"," de"," Marseille"," est"," nel"," Plus"," anc"," ersten"," quart","ày"," de"," della"," ville","]."," les",".b","ate"," ambos"," de"," p","ê"," hace"," rent"," rentals"," chaque"," mat"," morning"," WITH","their"," carg","aison","-between"," And"," les"," march"," marché"," install"," setzen"," leurs"," ét","𫮃"," le","long"," du"," qu","ai","."," les"," tourist"," nuevos"," se"," prom","è"," dans","ходят"," entre"," les"," caf"," кафе"," And"," les"," restaurants","进入"," tand"," mentre"," while"," les"," mou"," meine"," t","ourn","ходят"," au","-dess","之上"," de"," dell","'eau"," cl"," clear"," du"," bass","BIN","."],"14":["eso"," vieux"," port"," de"," Marseille"," est"," nel"," Plus"," anc"," nuevos"," quart","’hui"," de"," della"," ville","\n\t\t\t\t\n"," les"," b","ate","uelles"," de"," p","ê"," hace"," rent"," rentals"," chaque"," mat","iday"," WITH","their"," carg","aison"," /\n"," And"," les"," march","markets"," install"," setzen"," leurs"," ét","𫮃"," le","long"," du"," qu","uais","\n\t\t\t\t\n"," les"," tourist"," serta"," se"," prom","è","让您","moved","between"," les"," caf","és"," và"," les"," restaurants"," towards"," tand"," mentre"," while"," les"," mou","uelles"," t","ourn","メント"," au","-dess","之上"," de"," dell","'eau"," cl"," clear"," du"," bass","BIN","\n\t\t\t\t\n"],"17":["oki"," vieux"," port"," de"," Marseille"," est"," le"," Plus"," anc"," voksen"," quart","iphery"," de"," LA"," ville","."," Les"," b","ate"," ambos"," de"," p","ê","ême"," rent"," rentals"," chaque"," mat"," morning"," with","their"," carg","صة",","," And"," les"," march"," Markt"," install"," incluso"," leurs"," ét","𫮃"," le","long"," du"," qu"," quoi","."," Les"," tourist","今天我们"," se"," prom","è","ен","moved"," entre"," les"," caf"," café"," and"," les"," restaurants",","," tand"," mentre"," while"," les"," mou","ettes","t","ourn","メント"," au","-dess"," través"," de"," l","'eau"," cl"," clarity"," du"," Bass"," Basin","."],"20":[" Rivera"," vieux"," port"," de"," Marseille"," incluso","ם"," Plus"," anc","为代表的"," quart"," autour",".define"," della"," ville"," ​​"," MES",".b","ate","ماء"," de","p","ê"," chasing"," rent"," rents"," chaque","mat","第一时间"," with"," leur"," carg","的带领下"," ​​"," ​​"," pelos"," march"," marché"," install"," incluso"," leurs"," ét","𫮃"," le"," Long"," incluso","qu","hai"," ​​"," MES"," tourist","迫不及待"," se","(prom","è","人群中","のではないでしょうか","entre"," pelos"," caf"," caf"," ​​"," pelos"," restaurants","不仅仅是"," tand"," mentre"," mentre"," pelos"," Mou"," Moż","t","ourn"," dönüş"," au","dess","之上","ủa","_l","'eau","cl"," claro","河水"," Bass"," Basin"," ​​"],"23":[" PMC"," bourgeoisie"," port"," PMC"," Marseille"," UNESCO","ESCO"," UNESCO"," ANC"," UNESCO"," Quart"," bourgeoisie"," UNESCO","asbourg"," villa"," ​​","ebra","PPP","ate","razil","frica","PPP","ê"," mercado"," rent","ebra","ebra"," Mats","enzhen","ValuePair"," mercado"," carg"," coppia","razil"," mercado"," mercado"," march"," mercado","橦","ugeot"," mercado"," ét"," mercado","ESCO"," Lang"," mercado","qu","ValuePair"," ​​"," mercado"," tourist"," tourists"," se","prom","мес","iman"," terrace"," Entre"," mercado"," caf"," mercado"," mercado"," tourists"," mercado"," mercado"," tand"," Islamabad"," intellectuals"," mercado"," Mou"," mercado","(mt","ourn"," dance","agua"," Dess","asbourg","ebra"," multicultural","agua","cl","razil"," mercado"," Bass","社会资本"," ​​"],"26":[" ​​"," Donne","先生"," bè"," ​​"," coppia"," coppia"," Donne"," Donne","AccessorType","ilet"," Donne"," Marseille","澎"," ​​","OperationException"," bè","iterr"," behalf"," coppia"," bè"," mesure"," mesure"," coppia","enzhen","AccessorType"," coppia","asurement"," Donne"," Donne"," bè"," membranes"," coppia"," coppia"," coppia"," bè"," bè"," coppia","_MUTEX","PasswordEncoder"," bè"," setzen"," coppia"," coppia","AccessorType"," bè"," ürünü"," coppia"," ​​"," bè","欢迎大家"," coppia","itian","ò","お客様","基金"," Donne"," Donne"," terrace"," europ"," coppia"," Donne"," Donne"," coppia"," Donne","enzhen"," Donne"," Donne"," bè","pliance"," coppia"," taxis","enzhen"," bè"," coppia","电梯"," Donne"," coppia"," coppia"," Donne","sea"," Donne"," terrace"," bè"," terrace"," ​​"]},"actual_rank":{"2":[108914,0,0,0,0,1,0,0,0,3138,0,0,0,1,0,0,0,0,0,4095,0,0,0,5053,0,0,0,0,5,0,0,0,0,1,4,0,0,0,0,4104,0,0,3592,0,0,0,0,236,0,0,0,4299,0,0,0,258,4038,0,0,0,520,7,0,0,1,0,3117,0,0,0,10,0,0,4119,0,0,5188,0,0,0,0,5600,0,0,6,0],"5":[117814,0,0,0,0,9,0,1,0,15093,0,3019,0,1,0,29,1,0,0,3064,0,0,0,2417,0,3,0,0,11082,0,1,0,0,233,28,0,0,107,0,4444,0,0,97,0,0,34,0,3050,8,1,0,3410,0,0,0,111,7642,0,0,0,97,26,0,0,128,0,7070,107,0,0,0,0,0,2999,0,0,6982,0,1,0,0,3441,0,0,4341,13],"8":[90933,0,0,0,0,44,6,4,0,8364,0,46,0,1,0,336,1,0,0,3487,0,0,0,105,0,4,0,0,23012,1,3,0,0,2857,20,0,0,132,0,597,0,0,30,0,0,17,0,469,4,1,0,3408,0,0,0,119,6320,0,0,0,85,71,1,0,828,0,11571,50,0,0,27,0,0,56,0,0,11203,2,1,0,0,8434,0,0,5993,17],"11":[43687,0,0,0,0,0,1,2,0,4099,0,581,0,2,0,1,1,1,0,39,0,0,0,6,0,3,0,0,5276,1,2,0,0,14,8,0,0,20,0,375,0,0,8,0,2,0,0,0,0,1,0,8,0,0,0,7,3819,0,0,0,6,14,0,0,3,0,3537,17,0,0,25,0,0,46,0,0,731,0,1,0,0,463,0,0,52,0],"14":[53149,0,0,0,0,0,1,2,0,1459,0,2871,0,2,0,19,1,0,0,3,0,0,0,22,0,3,0,0,6675,3,2,0,0,17,10,0,0,7,0,331,0,0,4,0,4,0,0,1,1,1,0,1,0,0,0,63,1385,2,0,0,0,12,0,0,25,0,3890,29,0,0,2,0,0,30,0,0,756,0,3,0,0,591,0,0,68,4],"17":[122592,0,0,0,0,0,0,1,0,3447,0,4556,0,3,0,0,0,0,0,4,0,0,0,82,0,3,0,0,8168,2,1,0,1,0,3,0,0,1,0,364,0,0,19,0,2,0,0,3,0,0,0,15,0,0,0,6,6424,0,0,0,16,14,0,0,0,0,1369,16,0,0,0,1,0,92,0,0,4506,0,0,0,0,911,0,1,15,0],"20":[142395,0,0,0,0,390,224,3,0,10062,0,623,18,5,0,21,2,4,0,57,0,2,0,2816,0,4,0,1,2052,1,0,0,116,300,583,24,0,38,0,9245,0,0,1353,0,3,799,1,21,24,5,0,8743,0,1,0,162,39693,1,117,0,4076,4846,3979,0,323,0,2327,313,272,1,197,3,0,2754,0,2,1066,16,2,0,1,4088,49,1,63,42],"23":[132210,1538,0,13738,0,65264,45973,137,1,7735,1,53086,15583,12207,13,3579,17666,1732,0,599,11551,1144,0,32841,0,2564,28,4,45639,619,2548,0,10571,11358,20484,19144,0,2007,75,66808,995,0,11102,342,446,17316,2,1288,6095,15115,0,17783,0,3,1,2073,77727,7,13123,0,49724,14255,16167,120,9041,0,9164,15734,26684,1,7494,47,0,18003,55,9,46734,8037,19004,136,2,1734,10318,1,9589,5522],"26":[55195,16113,80644,13199,46,61035,75910,2950,10497,16643,101362,90858,30453,31546,55621,41520,87788,89316,1266,72844,16665,17909,103300,108625,17564,46686,28773,90264,56641,22712,10677,2259,43934,45216,21165,76545,328,42113,31404,101069,10573,31454,83217,47720,96839,69193,5246,82024,48610,76413,51,38164,68541,862,23507,9518,121724,8845,87570,3000,94510,24144,77402,13625,47404,80772,29553,53577,73861,667,2694,44163,1453,114095,17596,3652,104338,35302,72862,37873,12598,25257,63560,344,39008,48653]},"forward_top1":{"2":["—to","ё"," port"," licence"," Marseille"," 。","gypt"," purse","anc"," ,\n\n"," quart"," \n\n"," 。"," ，"," ville",".\r\n"," Les"," ”"," ”"," \n\n"," 。","qp","ê","<|endoftext|>"," rent"," 。","#\"","mat","\r\n\r\n","ён"," \r\n","s"," ,\r\n",".\n","？\n"," fé"," march"," ,\n"," :\n\n"," 。","）\r\n","ôt"," ,\n"," lle","s","。\n","iqu"," oi",".\r\n"," Les"," tourist"," ,"," ;\r\n\r\n"," »\n\n","chè","ôt"," ，","colour","'^"," caf"," „",".\n"," fé"," restaurants",".\n","ôt","andin","hpp"," \n\n"," mou"," ,\n"," ft","iers"," 。","pto","\"&","’","avour","ḥ","'eau"," ck","bout","。\n"," \n\n"," \n\n",".\n"],"5":["archical"," vieux","port"," licence"," Marseille"," départ"," France"," plus","anc"," \"**","icity"," town"," neighbourhood","』"," city",","," French","iards",",”"," boats"," colours","aps","ê"," fish"," (£"," cancelled","vely","mat"," hour","colour"," endeavour"," carg"," wagon",",",".\n"," Egyptian"," march"," merchants","ments","幢","'>\r\n","ég",")—",")—","s",")(_","iqu"," oi",".\n"," French"," tourist"," tourists","hiro","»,","è","ôt"," wander"," metres"," fé"," caf"," café",".\n","—"," restaurants",",","—\"","ð"," zombies"," forts","hou"," beasts","rop","ement"," $",")(\n","ieur","—"," coloured","ég","'eau","clair","ly",")__","**","—\"",".\n\n"],"8":["]**"," ageing","shore"," centre"," Marseille"," France"," France","--","anc"," centuries",")—"," city"," Paris"," France"," city","."," French","ards",",”"," ships"," railways","rop","pest"," fish","y"," aboard"," every","el"," nightly"," baggage","。\r\n"," cargo"," cargo"," every","｢","—","ards"," merchants","ments"," dé",").\r\n","ég"," warehouses",")—"," stretches"," coastline","um","码头",".\n"," French"," tourist"," tourists"," danced","­tion","è","iers"," outdoors"," metres","—and"," caf"," café",".\n","—and"," restaurants"," bustling","ôt","ð"," zombies",")—","și"," beasts","gh","ers","滚滚"," whisky","’."," skies"," coast",")—","'eau","gh","清澈","’n"," bass"," basin",".\n"],"11":["-signed"," ageing","ship","葡萄牙"," Marseille"," architectural"," (£"," Mexican"," ancient"," ancient"," borough","街区"," neighbourhood","巴黎"," city"," UNESCO"," tourists","iards","”,"," boats"," railways","ima"," fishing"," fishing","y"," boats"," nights","tle"," morning"," luggage"," Australians"," cargo"," cargo"," fishermen"," tourists","—are","shops"," merchants","ments"," shops",").\r\n","ég"," shops","—to"," streets"," shoreline","aque","码头"," bustling"," French"," tourist"," tourists"," danced","rom","e"," stroll"," streets"," café"," gardens"," caf"," café"," stylish"," shops"," restaurants"," tourists","uous","ð"," tourists"," chefs","hou"," beasts","ima","ments"," wheels"," estilo","ieur"," skies"," lava","ropolis","海水","ards"," shoreline"," Nile"," bass"," basin"," bustling"],"14":["ifax"," French","shore"," harbour"," Marseille"," centuries"," centre","allest","anc"," oldest","-city","街区"," neighbourhood"," France"," city"," UNESCO"," tourists","phones",")”"," boats"," railways","ima"," fishing"," fishermen"," metres"," flights"," every","imat"," morning"," kilometres"," tyres"," cargo"," cargo"," kilometres"," tourists"," chefs","shops"," merchants","ments"," floors"," homes","ég"," shops","”—"," streets"," shoreline","iqu","码头"," bustling"," tourists"," tourist"," tourists"," tourists","enade","è"," stroll"," streets"," café"," gardens"," caf"," café"," stylish"," shops"," restaurants"," tourists",")—"," festive"," tourists"," chefs","hou"," beasts","ima","ments"," nightly","街","ieur"," skies"," lava","ropolis"," underwater","giene"," shoreline"," Nile"," bass"," basin"," bustling"],"17":["难关"," French","shore","法国"," Marseille","？\n\n"," centre"," largest","anc"," archaeological","enaire"," city"," city","法国"," city","？\n\n"," French","phones","leys"," ships"," railways","issions","渔","渔民"," tyres"," flights"," morning","ches"," morning"," luggage"," luggage"," cargo"," cargo"," trucks"," tourists"," chefs","shops"," merchants","ments"," shops"," own","ér"," shops"," weekends"," streets"," shoreline","aque","码头"," citizens"," artists"," tourist"," tourists","游览","'''\n\n","ș","散步","漫步"," rooms"," streets"," café"," café"," restaurants"," hotels"," restaurants"," bustling","í","Whilst"," tourists"," chefs","boats"," birds","kt","ments"," nightly","街","érieur"," skies"," skies","街区"," boats","giene"," shoreline"," river","bach","湖泊","?\n\n"],"20":["襟"," French","porto"," transporte"," Marseille"," passé"," oldest"," français","anc"," architecture","-city"," city"," France"," city",".\n\n"," It"," residents","ètres","adores"," ships"," transport","éri","ê","渔民","èrent"," into"," année","mat"," morning"," their","船"," cargo"," fish"," but"," they"," boats","ers"," merchants","ments"," their"," shops","ér"," shops"," đêm"," streets"," river","ques","."," What"," streets"," tourists"," tourists","vé","ètre","è","ées","漫步"," café"," streets"," caf"," café"," restaurants"," hotels"," restaurants"," enjoying","ôt"," cél"," chefs"," chefs"," Mou"," birds","ôt","ées"," nightly"," près","ieurs",".\n\n"," cidade"," city","-water","ícul",".\n\n"," river","河道","湖泊"," What"],"23":["<|endoftext|>"," French","eur"," cargo"," dé"," composed"," largest","古老的","ient"," architectural","ique"," of"," France"," city","."," It"," buildings","onds","leurs"," voy"," voyage","asting","ér"," were","èrent"," dans"," day","uration"," morning"," their"," cargo","ue"," aliment"," qui"," les"," boats","eurs"," trades","és"," their"," shops","ablish"," à"," morning"," of"," river","河道","."," What"," buildings","iques"," arrive"," dé","otions","lé","ées"," dans"," différentes"," shops","ités"," café"," restaurants"," shops"," restaurants"," enjoying","ré"," that"," les"," chefs","leurs"," sont","iques","ées"," autour"," dé"," below"," of"," leur","'é"," waters","és","."," river","ière"," aquatic"," What"],"26":["."," du","ail"," passage"," est"," une"," plus"," anc","ien"," port","ier"," de"," Marseille"," ville"," et"," Il"," structures","ench","aux"," port"," marine","ê","che"," et","ent"," en"," jour","é"," et"," des"," chef","aison"," de"," et"," les"," boats","eurs"," de","ent"," des"," stocks","iqu"," sur"," jour"," des"," shore","cade","."," La"," artisans","es"," se"," arrange","endent","tent","ent"," par"," les"," restaurants","és"," et"," les"," restaurants"," et"," et","is"," que"," les"," chefs","vements"," de","uent","ent"," autour"," dess","us"," des"," la","'"," et","ée"," et"," port","in"," marine"," La"],"final":["otional"," de","ail"," passage",","," un"," plus"," grand","ien"," de","ier"," de"," la"," ville",","," C"," habit","ate","aux"," de"," p","ê","che",",","rent"," à"," jour","in"," à"," des"," p","aison"," de"," et"," les"," nav","és"," de","ent"," des"," march","al","."," jour"," de"," litt","ai","."," La"," habit","es",","," rend","è","n","ent"," dans"," les"," r","és"," et"," les"," restaurants",","," et","is"," que"," les"," habit","vements"," de","ourn","ent"," dans","-del","us"," de"," la","'",".","aire","."," lac","in","."," La"]},"cross_position":{"2":{"self":0.7142857142857143,"moved":0.02857142857142857,"novel":0.2571428571428571},"5":{"self":0.5857142857142857,"moved":0.02857142857142857,"novel":0.38571428571428573},"8":{"self":0.5285714285714286,"moved":0.04285714285714286,"novel":0.42857142857142855},"11":{"self":0.5857142857142857,"moved":0.02857142857142857,"novel":0.38571428571428573},"14":{"self":0.5571428571428572,"moved":0.02857142857142857,"novel":0.4142857142857143},"17":{"self":0.6285714285714286,"moved":0.0,"novel":0.37142857142857144},"20":{"self":0.3,"moved":0.014285714285714285,"novel":0.6857142857142857},"23":{"self":0.15714285714285714,"moved":0.0,"novel":0.8428571428571429},"26":{"self":0.0,"moved":0.0,"novel":1.0}}}};
+
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+const LAYERS = DATA.backward_layers;
+
+// ---- chart 1: accuracy curves --------------------------------------------
+function accChart() {
+  const W = 880, H = 360, m = { t: 18, r: 20, b: 42, l: 52 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const x = l => m.l + iw * (l - LAYERS[0]) / (LAYERS[LAYERS.length - 1] - LAYERS[0]);
+  const y = a => m.t + ih * (1 - a);
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}` });
+
+  for (let a = 0; a <= 1.001; a += 0.25) {
+    el("line", { x1: m.l, x2: W - m.r, y1: y(a), y2: y(a), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+    const t = el("text", { x: m.l - 8, y: y(a) + 4, "text-anchor": "end", "font-size": 11 }, svg);
+    t.textContent = Math.round(a * 100) + "%";
+  }
+  // crossover band L20-23
+  el("rect", { x: x(20), y: m.t, width: x(23) - x(20), height: ih, fill: "var(--violet-soft)" }, svg);
+  const bl = el("text", { x: (x(20) + x(23)) / 2, y: m.t + 14, "text-anchor": "middle", "font-size": 10.5, fill: "var(--violet)" }, svg);
+  bl.textContent = "handoff";
+
+  for (const l of LAYERS) {
+    const t = el("text", { x: x(l), y: H - m.b + 18, "text-anchor": "middle", "font-size": 11 }, svg);
+    t.textContent = l;
+  }
+  const xl = el("text", { x: m.l + iw / 2, y: H - 6, "text-anchor": "middle", "font-size": 11 }, svg);
+  xl.textContent = "layer";
+
+  const series = [
+    { key: "backward", get: d => d.top1_acc, color: "var(--teal)", w: 2.5 },
+    { key: "forward", get: d => d.top1_acc, color: "var(--amber)", w: 2.5 },
+    { key: "baseline", get: d => d.top1_acc, color: "var(--muted)", w: 1.5, dash: "4 4" },
+  ];
+  for (const s of series) {
+    const pts = LAYERS.map(l => [x(l), y(s.get(DATA.retention[s.key][l]))]);
+    el("path", {
+      d: "M" + pts.map(p => p.map(v => v.toFixed(1)).join(",")).join("L"),
+      fill: "none", stroke: s.color, "stroke-width": s.w,
+      "stroke-dasharray": s.dash || "none", "stroke-linejoin": "round",
+    }, svg);
+    if (!s.dash) for (const p of pts) el("circle", { cx: p[0], cy: p[1], r: 3.5, fill: s.color }, svg);
+  }
+  document.getElementById("chart-acc").appendChild(svg);
+}
+
+// ---- chart 2: self/moved/novel stacked bars ------------------------------
+function barChart() {
+  const prompts = [["ascii_face", "ASCII face"], ["french", "French paragraph"]];
+  const W = 880, H = 250, m = { t: 26, r: 10, b: 34, l: 46 }, gapG = 46;
+  const gw = (W - m.l - m.r - gapG) / 2;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}` });
+  const colors = { self: "var(--teal)", moved: "var(--amber)", novel: "var(--violet)" };
+  const ih = H - m.t - m.b;
+
+  for (let a = 0; a <= 1.001; a += 0.5) {
+    const yy = m.t + ih * (1 - a);
+    const t = el("text", { x: m.l - 8, y: yy + 4, "text-anchor": "end", "font-size": 10.5 }, svg);
+    t.textContent = Math.round(a * 100) + "%";
+  }
+  prompts.forEach(([key, label], gi) => {
+    const gx = m.l + gi * (gw + gapG);
+    const title = el("text", { x: gx + gw / 2, y: 14, "text-anchor": "middle", "font-size": 11.5, "font-weight": 600, fill: "var(--ink)" }, svg);
+    title.textContent = label;
+    const bw = gw / LAYERS.length * 0.62;
+    LAYERS.forEach((l, i) => {
+      const cx = gx + gw * (i + 0.5) / LAYERS.length;
+      const d = DATA[key].cross_position[l];
+      let acc = 0;
+      for (const k of ["self", "moved", "novel"]) {
+        const h = ih * d[k];
+        el("rect", { x: cx - bw / 2, y: m.t + ih - acc - h, width: bw, height: Math.max(h, d[k] > 0 ? 1 : 0), fill: colors[k] }, svg);
+        acc += h;
+      }
+      const t = el("text", { x: cx, y: H - m.b + 16, "text-anchor": "middle", "font-size": 10 }, svg);
+      t.textContent = l;
+    });
+    const xl = el("text", { x: gx + gw / 2, y: H - 4, "text-anchor": "middle", "font-size": 10.5 }, svg);
+    xl.textContent = "layer";
+  });
+  document.getElementById("chart-bars").appendChild(svg);
+}
+
+// ---- ASCII face panels ----------------------------------------------------
+function faces() {
+  const d = DATA.ascii_face;
+  const wrap = document.getElementById("faces");
+  const panels = [
+    ["input", null, "input"],
+    ["layer 14", "14", "ok"], ["layer 20", "20", "ok"],
+    ["layer 23", "23", "gone"], ["layer 26", "26", "gone"],
+  ];
+  for (const [label, layer, cls] of panels) {
+    const toks = layer ? d.ghost_top1[layer] : d.input_tokens;
+    const div = document.createElement("div");
+    div.className = "face";
+    const h = document.createElement("h3");
+    h.textContent = label;
+    if (cls !== "input") h.className = cls;
+    const pre = document.createElement("pre");
+    // drop the first line (instruction preamble) for compactness: start at token 16
+    let text = toks.slice(16).join("");
+    text = text.replace(/\u200b/g, "·");
+    pre.textContent = text;
+    div.appendChild(h); div.appendChild(pre);
+    wrap.appendChild(div);
+  }
+}
+
+// ---- French swaps ---------------------------------------------------------
+function swaps() {
+  const items = [
+    ["avec", "WITH", 8], ["leur", "Their", 8], ["…ands (marchands)", "merchants", 8],
+    ["…in (matin)", "mornings", 8], ["…ent (installent)", "setzen (de)", 14],
+    ["…ands (marchands)", "marché", 20], ["étals / quai region", "mercado ×7", 23],
+  ];
+  const wrap = document.getElementById("swaps");
+  for (const [from, to, l] of items) {
+    const d = document.createElement("div");
+    d.className = "swap";
+    d.innerHTML = `<span class="lay">L${l}</span><span class="from">${from}</span> → <span class="to">${to}</span>`;
+    wrap.appendChild(d);
+  }
+}
+
+// ---- French grid ----------------------------------------------------------
+function frenchGrid() {
+  const d = DATA.french;
+  const ids = d.input_tokens;
+  const lo = 20, hi = 48;
+  const inSet = new Set(ids.map(t => t));
+  const tbl = document.getElementById("french-grid");
+  const show = t => t.replace(/\u200b/g, "·").replace(/\n/g, "⏎");
+
+  let tr = document.createElement("tr");
+  tr.innerHTML = "<th>input</th>" + ids.slice(lo, hi).map(t => `<td class="in">${show(t)}</td>`).join("");
+  tbl.appendChild(tr);
+  for (const l of ["2", "8", "14", "17", "20", "23", "26"]) {
+    tr = document.createElement("tr");
+    let cells = `<th>L${l}</th>`;
+    d.ghost_top1[l].slice(lo, hi).forEach((g, i) => {
+      const actual = ids[lo + i];
+      const cls = g === actual ? "self" : (inSet.has(g) ? "mv" : "nv");
+      cells += `<td class="${cls}">${show(g)}</td>`;
+    });
+    tr.innerHTML = cells;
+    tbl.appendChild(tr);
+  }
+}
+
+// ---- stability vs predictive convergence scatter ---------------------------
+// PIVOT: per held-out position, log10(rank+1) pairs at layers 14/20/23:
+// [g14, f14, g20, f20, g23, f23] where g = ghost rank of the actual input
+// token (stability; low = held) and f = forward-lens rank of the model's
+// final prediction (convergence; low = converged).
+const PIVOT = [[2.386,0.0,2.477,2.605,4.624,2.086],[0.0,2.238,0.0,0.845,2.634,0.0],[0.0,3.285,0.699,0.602,4.484,0.845],[0.0,3.371,0.0,1.771,3.644,0.903],[1.643,2.848,3.064,0.0,4.604,0.0],[0.699,0.301,0.699,0.602,3.446,0.301],[0.0,2.511,0.301,1.447,2.513,0.0],[0.602,3.319,1.623,2.097,4.128,2.009],[0.0,2.691,0.0,1.079,1.903,0.0],[0.301,3.06,0.903,0.903,4.413,0.301],[0.0,4.213,0.0,2.403,0.845,0.699],[1.146,2.884,2.855,0.903,4.509,0.0],[0.0,2.975,1.447,0.0,3.65,0.0],[0.0,3.31,0.903,0.301,3.939,0.0],[0.0,4.084,0.0,2.818,0.954,2.417],[0.0,3.662,1.732,0.903,3.999,0.0],[0.0,3.49,0.0,1.398,3.667,1.362],[0.0,3.809,0.0,1.982,1.146,0.0],[1.146,2.673,4.014,0.0,4.673,0.0],[0.0,4.617,1.672,1.176,3.803,0.0],[0.0,2.961,0.0,0.602,3.618,0.0],[0.0,3.88,0.0,1.785,3.031,0.0],[0.301,1.342,2.029,0.0,4.464,0.0],[0.699,4.129,1.602,0.602,4.358,0.301],[0.0,2.604,0.0,2.276,0.699,0.778],[1.301,2.846,3.1,1.991,5.009,1.544],[0.699,2.408,1.322,0.301,4.39,0.0],[1.079,2.691,3.529,1.204,4.69,1.362],[0.0,3.765,1.041,3.055,4.824,2.797],[0.0,1.568,0.0,0.602,1.462,0.845],[2.447,1.322,1.38,0.477,4.422,1.0],[0.477,2.997,1.447,0.845,4.293,0.602],[0.0,3.941,0.0,2.061,0.477,0.0],[0.954,2.576,1.114,0.699,4.278,0.301],[0.0,2.301,3.319,0.0,4.457,0.0],[0.0,3.614,0.301,0.602,3.182,0.0],[0.0,2.705,0.0,0.301,3.943,0.0],[0.0,3.784,0.0,0.301,4.197,0.0],[0.0,2.691,0.954,0.301,4.435,0.0],[1.255,2.678,2.371,0.477,4.438,0.477],[1.301,1.82,3.585,1.643,4.677,0.954],[0.0,4.074,0.0,3.654,3.474,3.108],[0.0,1.964,0.301,0.954,2.21,0.301],[0.699,3.121,1.875,0.0,4.382,0.0],[0.0,3.963,1.079,1.114,4.653,0.301],[0.0,3.864,0.0,1.857,1.146,0.699],[1.716,1.869,3.595,1.462,4.689,0.602],[0.0,2.733,0.301,1.362,3.674,1.114],[0.0,1.924,0.0,0.0,3.048,0.301],[0.0,2.468,0.0,1.146,3.659,1.447],[1.176,2.281,2.99,0.301,4.467,0.477],[0.0,1.591,0.0,0.778,0.699,0.0],[0.602,1.886,0.699,0.477,3.91,0.0],[0.0,4.688,0.0,3.788,3.635,2.853],[0.477,3.285,0.699,1.82,3.398,1.69],[0.0,3.852,0.0,2.124,2.696,0.0],[0.0,3.613,0.301,0.477,4.19,0.301],[0.845,3.85,2.5,2.334,4.506,2.0],[0.0,4.009,0.0,1.204,0.0,0.0],[0.778,2.613,0.845,0.0,3.909,0.0],[0.0,2.498,1.898,1.623,4.811,1.708],[0.0,3.341,0.0,1.0,0.477,0.0],[0.699,2.872,0.903,1.568,3.943,2.508],[0.0,2.433,0.0,1.38,1.708,0.954],[0.477,3.504,1.255,1.845,4.29,1.613],[0.0,1.881,0.0,0.602,0.0,0.301],[0.0,4.343,0.0,1.672,2.691,0.477],[0.845,3.188,1.255,2.079,4.051,2.164],[0.0,3.104,0.0,0.477,3.525,0.0],[0.0,2.547,0.0,0.778,1.38,0.0],[1.462,3.118,3.175,0.903,4.59,1.041],[0.0,2.752,0.0,0.477,1.653,0.0],[0.301,3.374,2.017,1.301,4.625,1.643],[0.0,1.949,0.0,0.845,0.301,0.0],[1.477,1.398,1.114,0.845,3.794,0.699],[0.301,3.208,0.477,2.965,0.699,2.915],[1.462,2.796,1.505,2.765,2.373,1.38],[0.0,3.494,1.0,0.602,2.933,0.0],[0.699,3.158,1.204,1.857,4.514,0.477],[0.0,3.74,0.0,3.058,0.301,2.939],[0.699,1.996,0.699,1.462,3.262,0.477],[0.0,4.653,0.0,1.362,2.967,0.0],[0.0,4.183,0.477,3.006,3.38,1.74],[1.602,3.346,0.602,0.602,4.075,0.477],[0.0,2.057,1.716,1.0,4.257,1.279],[0.301,1.908,0.301,0.0,2.719,0.0],[0.0,2.29,0.477,0.0,2.146,0.301],[2.068,2.164,4.048,1.23,4.76,0.0],[0.0,1.613,0.0,0.0,2.09,0.0],[3.015,2.598,3.926,0.0,4.546,0.0],[1.544,3.157,3.937,2.575,4.701,0.0],[0.0,3.71,0.0,1.398,0.0,0.602],[2.086,3.51,3.18,1.079,4.459,1.462],[0.0,3.311,0.0,2.114,0.0,2.999],[0.845,2.037,1.839,2.049,3.19,0.954],[0.845,3.132,2.446,1.857,3.666,0.699],[0.0,3.16,0.699,0.954,1.204,0.0],[0.301,3.554,1.491,0.903,4.582,1.041],[0.0,3.899,0.0,3.266,1.301,0.301],[0.301,4.358,0.602,0.954,3.793,0.301],[0.778,3.58,2.204,1.079,4.611,1.176],[0.602,3.709,0.0,0.301,3.646,0.0],[1.732,4.031,3.825,2.858,4.693,1.477],[0.0,3.695,0.0,1.813,1.672,0.301],[0.0,3.555,1.699,3.083,4.342,2.892],[0.0,3.388,0.0,1.431,0.0,0.301],[0.845,3.303,2.342,2.371,4.088,2.346],[1.633,2.444,3.276,1.38,4.372,0.301],[0.0,3.124,0.0,2.086,0.699,1.0],[0.0,2.146,0.0,1.23,0.0,0.778],[0.0,3.594,0.0,2.149,0.301,1.301],[0.477,3.174,0.0,1.0,2.548,0.0],[0.0,3.709,0.0,1.69,4.135,1.785],[0.954,0.0,4.228,0.0,4.923,0.477],[0.0,2.358,0.0,0.477,1.041,0.0],[0.0,3.608,2.422,2.114,4.279,1.799],[0.301,1.255,0.0,0.602,0.301,0.301],[0.0,3.392,0.0,0.699,2.228,0.477],[0.0,2.783,1.94,1.924,3.888,2.394],[0.602,0.845,0.602,0.699,3.789,0.477],[0.0,3.244,0.0,0.301,0.0,0.477],[0.477,4.004,0.602,1.519,4.146,1.041],[0.0,3.356,2.497,1.845,4.733,0.477],[0.477,3.023,0.0,0.845,1.079,0.0],[0.0,0.301,2.155,0.903,4.703,1.623],[0.0,3.534,0.0,0.301,3.021,0.0],[0.0,3.474,0.301,1.491,3.817,0.699],[0.954,2.158,1.279,0.477,4.323,0.477],[0.301,3.157,0.0,1.079,0.845,1.114],[0.778,3.529,1.763,1.23,4.078,0.0],[0.0,2.646,0.0,0.845,2.502,1.0],[0.903,4.379,2.188,0.0,4.568,0.0],[0.0,3.944,0.0,2.891,0.602,0.0],[3.333,2.877,3.622,0.845,4.484,0.602],[0.0,3.51,0.0,0.602,1.602,0.301],[1.447,3.222,1.826,0.301,4.643,0.301],[0.477,4.275,3.86,1.0,4.848,1.279],[0.301,2.659,0.301,1.643,0.845,0.778],[0.0,3.414,0.0,0.477,0.699,0.0],[0.0,3.396,0.0,1.079,0.778,0.301],[0.301,1.176,0.0,0.0,2.782,0.0],[1.839,3.243,3.696,1.447,4.758,0.477],[0.477,1.447,1.342,0.0,3.936,0.0],[0.0,3.021,0.0,1.38,0.0,0.301],[1.079,2.747,2.41,0.0,4.582,0.0],[1.623,2.403,3.401,2.104,4.692,1.079],[0.0,4.002,0.0,0.778,1.568,0.301],[1.114,3.769,2.143,1.079,4.421,1.0],[0.301,4.201,0.0,0.602,4.148,0.778],[0.778,1.279,3.056,1.591,4.634,1.38],[0.0,3.425,0.0,1.799,0.477,0.477],[0.0,3.144,0.477,0.778,3.355,0.0],[0.0,3.061,0.477,1.176,4.244,1.041],[0.699,3.204,4.279,2.037,4.957,1.613],[0.0,4.362,0.0,3.504,0.0,1.672],[1.74,3.403,3.113,1.763,4.557,1.944],[0.477,1.591,1.431,0.954,4.55,0.301],[0.0,3.646,0.0,2.914,3.217,2.827],[0.0,1.881,0.0,0.699,0.0,0.602],[2.455,4.078,4.179,1.041,4.01,0.0],[0.301,4.185,0.301,2.751,2.587,2.79],[0.0,4.033,0.0,1.176,3.715,0.301],[0.903,4.451,2.146,0.699,4.568,0.699],[0.301,4.042,0.477,1.987,3.583,1.38],[1.0,3.876,2.033,1.176,4.034,0.0],[0.0,4.755,0.477,0.602,3.644,0.0],[0.0,3.334,0.0,1.146,3.806,0.477],[0.0,3.64,0.0,1.342,0.954,0.0],[0.0,4.272,0.954,0.301,4.287,0.0],[1.204,3.327,3.44,0.0,4.905,0.0],[0.0,4.225,0.301,3.53,0.0,3.018],[0.301,2.648,0.954,2.029,4.147,0.0],[0.0,1.531,0.0,2.017,3.201,1.114],[0.301,1.903,0.602,1.114,0.602,0.0],[0.301,3.116,3.783,0.301,4.873,0.0],[0.301,3.231,0.477,0.301,4.203,0.0],[0.0,2.265,2.458,1.813,4.931,0.954],[0.0,2.797,0.0,1.079,2.794,0.301],[0.301,2.548,1.398,0.301,4.428,0.301],[1.633,1.58,2.777,0.845,4.618,0.301],[0.301,3.699,0.0,1.146,1.279,1.0],[1.079,2.663,3.117,0.301,4.737,1.114],[0.301,3.8,0.0,0.699,3.743,0.0],[0.0,2.563,1.964,0.602,4.204,0.0],[1.556,3.66,2.356,1.875,4.582,2.241],[0.0,1.342,0.0,0.602,2.508,0.301],[0.0,2.834,0.0,1.322,0.602,1.681],[0.0,3.894,1.875,3.435,4.203,3.203],[0.301,2.885,0.0,1.845,1.924,1.079],[0.903,2.945,3.133,1.079,4.733,1.756],[0.699,2.759,2.045,2.32,4.846,1.74],[1.0,3.016,1.447,0.0,4.066,0.0],[1.255,2.435,2.114,0.0,4.538,0.0],[0.0,3.285,0.301,2.643,2.863,2.164],[0.301,4.025,0.301,0.954,0.699,0.0],[0.477,3.228,2.826,1.23,4.689,1.653],[0.301,4.083,0.301,0.699,1.633,1.23],[1.322,2.934,3.475,1.079,4.744,1.556],[0.0,2.072,0.0,0.903,1.724,0.0],[0.0,2.719,0.0,1.863,1.079,0.0],[0.477,4.422,1.991,0.477,4.513,0.0],[0.301,4.851,0.0,3.846,3.501,0.845],[0.477,3.297,2.722,0.477,3.961,0.0],[0.0,4.871,0.778,0.477,3.957,0.0],[0.0,3.278,0.0,0.602,4.048,0.0],[0.0,4.556,0.301,1.756,3.401,0.903],[0.0,4.14,0.477,0.301,3.881,0.0],[0.954,3.485,2.848,0.0,4.824,0.0],[0.0,4.106,0.0,3.872,0.301,2.625],[0.0,3.682,0.0,2.744,0.0,1.114],[0.301,4.139,0.0,1.23,2.973,0.0],[0.477,1.079,1.898,0.301,4.444,0.0],[0.0,3.112,0.0,1.982,1.602,0.301],[0.778,3.541,0.602,1.415,3.371,1.279],[1.322,2.114,2.928,0.0,4.571,0.0],[0.0,3.932,0.0,1.544,1.38,0.0],[0.0,1.204,0.0,0.778,0.301,0.301],[0.0,2.512,0.0,0.301,3.143,0.699],[1.531,3.186,1.792,0.0,4.461,0.0],[0.301,2.436,2.616,1.279,4.711,0.0],[0.301,4.394,0.0,1.079,1.987,0.301],[0.301,3.812,0.0,1.613,4.159,1.863],[0.0,3.252,0.0,2.585,0.0,2.72],[0.477,3.625,2.696,1.699,3.88,1.079],[0.0,3.856,0.301,1.982,2.931,1.431],[1.204,1.672,2.992,0.0,4.299,0.0],[0.0,3.059,0.301,0.477,3.924,0.301],[0.301,4.62,0.0,3.467,3.81,2.766],[0.0,3.12,0.0,0.0,2.057,0.0],[2.412,2.299,3.741,0.301,4.514,0.0],[0.0,4.09,0.0,1.462,2.74,1.431],[0.0,1.204,0.602,0.0,4.247,0.301],[0.0,3.283,0.0,2.107,2.127,1.255],[0.0,4.421,0.301,2.966,3.719,2.276],[0.0,1.255,0.0,1.0,0.477,0.699],[0.0,3.567,0.0,0.477,2.262,0.301],[0.301,4.411,1.322,2.986,4.299,2.594],[0.0,2.412,0.0,1.491,2.332,0.0],[0.0,3.824,0.0,0.0,0.301,0.0],[0.477,3.78,0.954,0.301,4.365,0.0],[0.0,1.929,2.984,0.778,4.746,0.0],[0.0,2.389,0.0,2.09,0.0,0.0],[0.0,3.58,0.0,1.898,2.149,0.0],[0.0,3.939,0.778,2.201,3.274,1.778],[0.301,2.942,0.477,1.23,1.959,0.778],[0.602,3.321,2.326,1.431,4.635,1.531],[0.0,4.745,0.0,3.117,0.477,1.491],[0.845,3.267,1.204,0.477,4.427,0.602],[0.845,0.699,3.816,0.301,4.617,0.0],[0.0,4.187,0.0,4.165,0.301,2.146],[0.301,3.841,0.778,2.207,2.947,1.74],[0.0,2.742,0.0,0.778,0.845,0.301],[0.301,2.072,0.301,0.0,2.111,0.0],[0.0,4.504,2.643,2.915,4.391,2.14],[0.0,3.837,0.0,1.041,1.176,0.699],[0.0,3.898,1.146,0.477,4.715,0.477],[0.301,2.473,0.0,0.699,3.285,0.699],[0.301,1.996,0.301,0.0,2.228,0.0],[2.334,3.599,2.556,2.025,4.445,2.137],[0.0,4.312,0.0,2.297,1.602,0.0],[1.146,2.807,3.34,1.362,4.448,0.0],[0.0,4.556,0.903,1.863,3.057,0.0],[0.954,3.298,0.477,0.845,3.336,0.0],[1.415,3.703,3.882,0.0,4.459,0.0],[0.0,3.983,0.0,0.699,3.348,0.0],[0.0,3.555,0.0,0.0,3.442,0.0],[0.0,4.293,0.0,1.491,4.064,0.301],[0.0,2.988,0.301,2.699,4.061,2.185],[0.0,4.01,0.301,3.487,3.791,2.396],[1.322,3.568,0.778,0.778,4.404,0.301],[0.477,3.89,0.699,2.465,2.848,2.238],[0.0,4.095,0.0,2.281,0.301,0.0],[0.845,2.558,3.171,1.114,4.017,0.0],[0.0,2.86,0.845,0.0,2.921,0.0],[0.301,3.631,1.041,0.0,3.477,0.301],[1.114,3.441,0.778,1.0,3.983,0.0],[0.602,3.261,4.199,0.0,4.474,0.0],[0.0,4.694,0.301,0.477,3.954,0.0],[0.0,3.422,0.602,0.903,4.37,0.0],[0.0,4.218,0.301,0.477,4.658,0.0],[0.0,4.298,0.0,0.0,4.264,0.0],[1.146,2.99,3.016,0.477,4.589,0.699],[0.0,3.298,0.0,1.663,0.845,0.301],[0.0,2.7,0.0,2.029,0.699,0.301],[0.477,4.15,1.672,2.405,4.228,2.236],[0.778,2.823,3.865,1.58,4.795,2.493],[0.0,0.778,0.0,0.602,2.378,0.477],[0.0,2.693,0.0,0.477,1.869,0.0],[0.0,1.924,1.342,0.778,4.318,0.301],[0.0,3.947,0.0,3.014,0.602,0.903],[0.477,3.699,0.477,1.919,4.416,1.415],[1.556,1.613,3.066,0.602,4.428,0.0],[0.0,3.676,0.0,2.356,0.477,1.613],[0.301,4.103,1.23,2.992,4.009,1.792],[0.0,4.237,0.0,3.737,2.107,0.477],[0.0,3.004,0.845,0.301,3.734,0.0],[0.477,4.122,1.079,1.944,4.302,1.447],[0.0,3.752,1.845,2.152,4.573,0.477],[0.0,3.838,0.0,2.193,3.309,0.903],[0.0,2.834,0.0,3.497,4.086,2.173],[0.0,2.199,0.301,2.121,4.373,1.839],[0.0,1.792,1.204,0.602,4.046,0.0],[0.0,2.292,0.0,1.431,3.759,0.778],[0.0,2.086,0.477,0.699,3.94,1.114],[0.0,0.0,0.602,0.0,4.098,0.0],[0.0,3.737,0.0,1.724,1.462,0.845],[0.0,4.114,2.093,2.076,4.888,1.477],[0.0,3.428,0.301,0.699,4.357,0.301],[0.0,3.992,0.0,2.358,2.61,0.301],[0.0,2.618,0.0,0.954,0.301,0.0],[0.0,3.158,0.477,1.505,3.752,0.0],[0.0,1.892,0.0,0.301,3.029,0.0],[0.0,2.833,0.0,1.322,3.297,0.477],[0.0,3.208,0.0,2.834,3.808,2.38],[0.0,1.531,0.0,1.146,0.0,0.0],[0.0,3.807,0.0,3.501,1.342,1.505],[0.0,3.539,0.0,1.176,3.866,1.176],[0.0,3.88,0.0,2.176,3.781,1.643],[1.653,2.71,2.719,2.248,4.574,1.23],[0.0,3.269,0.0,1.505,0.845,0.0],[1.0,4.029,1.613,0.778,4.645,0.0],[0.602,1.58,3.381,0.0,4.67,0.0],[0.0,2.41,0.0,2.378,0.699,0.778],[0.477,3.33,0.845,2.22,4.099,2.274],[0.0,3.695,0.0,2.179,3.096,0.301],[0.477,3.741,1.949,1.255,4.563,1.176],[0.0,4.236,2.124,2.843,4.957,1.531],[0.0,3.673,0.0,2.204,2.415,1.23],[0.0,4.188,0.0,1.079,2.279,0.699],[0.0,3.33,0.0,1.519,3.204,0.0],[1.672,3.748,3.687,2.258,4.711,2.344],[1.114,2.297,3.943,0.699,4.739,0.477],[0.301,1.591,0.778,0.602,3.598,0.845],[0.0,5.009,0.477,2.751,3.499,0.0],[0.477,4.311,1.079,1.748,4.302,1.176],[0.0,0.845,0.477,0.0,3.42,0.0],[0.0,3.1,0.0,0.477,2.152,0.301],[0.301,4.052,0.954,0.602,4.324,0.301],[0.0,2.926,2.965,1.114,4.769,1.041],[0.0,3.293,0.0,2.061,0.301,1.708],[0.0,3.695,0.301,1.672,2.228,0.301],[0.0,3.506,0.477,0.903,3.762,0.0],[0.301,3.519,0.301,1.204,4.288,1.342],[0.0,3.788,0.0,0.778,3.364,0.0],[0.301,3.642,2.871,2.246,4.417,1.544],[1.23,0.699,3.055,0.699,4.487,0.477],[0.0,2.415,0.0,0.778,0.477,0.301],[0.0,1.799,0.0,1.556,0.0,0.0],[0.301,3.38,0.301,1.431,2.539,2.433],[0.0,2.793,0.0,1.82,1.929,0.778],[0.301,2.061,1.041,0.954,2.201,0.301],[0.699,3.618,1.756,0.301,4.343,0.0],[0.0,4.218,0.0,4.741,0.0,2.575],[1.279,3.021,3.146,1.146,4.367,0.0],[0.0,3.621,0.954,1.845,3.074,0.301],[0.0,3.471,0.845,0.301,3.221,0.0],[0.0,3.413,0.0,2.837,3.155,2.076],[0.0,3.735,2.818,1.771,4.248,0.0],[0.0,4.175,0.301,2.137,3.388,0.0],[0.0,3.532,1.204,0.0,3.963,0.0],[0.699,3.116,0.477,0.602,3.786,0.0],[0.301,3.94,4.049,0.301,4.513,0.301],[0.0,3.423,0.301,2.0,3.158,0.0],[0.0,3.656,0.477,1.544,4.2,0.954],[0.0,3.337,0.0,1.447,1.38,1.362],[0.0,3.951,1.716,0.477,3.915,0.0],[0.301,3.81,1.531,0.301,4.434,0.0],[0.0,4.72,0.301,2.592,1.146,2.25],[0.477,3.255,2.929,1.792,4.341,0.778],[0.0,3.274,1.079,1.826,3.649,0.0],[0.602,3.383,0.477,1.568,4.401,0.0],[0.0,2.884,0.0,3.125,3.824,3.233],[0.0,4.099,0.0,4.077,4.442,2.73],[0.0,2.369,1.0,1.826,4.739,1.58],[0.0,1.74,2.467,0.0,4.357,0.0],[0.0,2.423,0.778,0.0,4.02,0.0],[0.0,0.699,0.602,0.0,4.286,0.0],[0.0,2.439,1.0,0.301,4.517,0.602],[0.477,2.453,0.477,2.452,0.477,1.38],[0.0,2.033,0.301,1.447,2.107,0.477],[0.0,2.804,0.0,1.0,0.301,0.0],[0.477,1.591,1.544,0.0,4.512,0.0],[0.778,3.744,2.583,3.017,4.476,2.068],[0.0,2.785,0.0,0.602,3.497,0.301],[0.477,3.498,0.602,2.433,1.69,1.748],[0.301,3.173,0.477,0.602,3.182,0.699],[0.0,3.351,1.146,1.732,4.245,2.017],[0.699,1.643,2.947,0.0,4.522,0.0],[0.0,1.903,0.0,0.0,2.021,0.0],[0.477,3.557,2.391,0.301,4.363,0.845],[0.477,3.312,2.862,2.53,4.483,1.991],[0.0,3.419,0.0,0.845,1.643,0.845],[0.0,4.226,0.0,2.569,0.778,1.505],[1.568,3.242,1.398,0.954,4.0,0.477],[0.778,0.602,0.602,0.778,4.068,0.0],[0.845,3.303,2.064,0.954,4.453,0.301],[0.602,2.856,2.079,0.0,4.589,0.0],[0.0,3.487,0.0,1.176,2.436,0.0],[0.477,0.301,1.114,0.0,3.796,0.0],[0.477,2.417,2.117,0.477,4.49,0.301],[0.0,4.153,0.0,2.468,1.398,1.176],[0.0,3.289,0.699,1.301,4.241,1.663],[1.204,2.55,2.785,1.954,4.615,0.954],[0.0,3.48,0.0,1.505,1.146,0.477],[0.0,4.198,0.778,0.954,4.138,0.0],[0.0,1.079,0.0,0.778,0.477,0.301],[1.477,3.113,4.208,2.204,3.935,1.462],[0.0,3.102,0.477,1.568,4.042,1.462],[0.477,1.041,2.494,0.0,4.577,0.0],[0.0,4.128,0.0,1.869,0.477,1.322],[0.778,3.265,2.009,1.778,4.509,1.699],[0.0,2.117,0.301,0.0,4.164,0.0],[0.301,2.303,0.301,0.0,4.274,0.0],[0.477,2.716,0.0,0.0,2.041,0.0],[0.477,3.806,0.845,2.021,3.84,1.398],[0.602,4.186,3.866,2.369,4.853,2.161],[0.0,3.961,0.301,1.672,2.758,0.477],[0.301,3.172,0.0,2.057,0.301,1.613],[0.0,2.812,0.477,0.903,3.204,0.845],[0.699,4.22,2.097,0.301,4.512,0.0],[0.477,4.006,0.477,1.959,1.58,1.041],[1.716,2.356,3.145,1.342,4.564,0.301],[0.301,2.576,0.0,0.845,1.079,0.0],[0.0,3.248,0.301,0.778,3.64,0.0],[0.0,3.45,0.477,1.708,4.227,1.756],[0.0,2.956,2.539,1.544,4.833,0.778],[0.0,3.098,0.0,3.377,0.0,1.114],[1.114,3.227,0.903,0.0,3.551,0.0],[0.477,3.505,2.352,2.083,4.257,1.544],[0.602,1.146,3.23,0.699,4.523,0.602],[0.0,1.748,0.0,2.049,0.0,1.176],[0.0,4.56,0.0,2.637,0.301,1.447],[0.0,4.438,0.0,2.068,0.699,0.602],[1.0,4.236,1.924,0.699,4.347,0.0],[0.301,4.951,0.0,4.13,3.514,1.556],[0.0,3.211,2.84,1.0,4.053,0.301],[0.0,4.538,0.778,0.477,3.523,0.0],[0.0,3.371,0.0,1.447,4.556,1.079],[0.0,3.12,0.0,1.447,2.648,0.477],[0.0,4.591,1.38,0.301,3.624,0.0],[0.845,3.15,2.765,0.0,4.811,0.0],[0.778,3.204,2.976,1.833,4.481,0.699],[0.0,4.267,0.301,3.089,2.708,3.055],[0.0,3.103,0.0,2.09,3.263,1.978],[1.279,2.822,2.857,2.037,4.404,1.845],[0.699,2.369,3.288,1.643,4.563,1.431],[0.0,4.58,0.0,2.882,0.0,1.653],[0.301,3.821,0.301,3.458,1.342,3.529],[1.362,1.771,1.633,0.301,3.874,0.301],[0.301,2.901,0.301,0.778,1.892,0.0],[0.0,3.819,0.477,0.301,1.74,0.0],[0.699,4.042,1.806,0.778,4.387,0.602],[0.0,2.204,0.0,2.338,1.255,2.433],[0.0,4.441,1.079,2.483,3.632,1.0],[0.0,4.007,0.0,3.118,0.0,1.763],[0.0,1.929,0.0,0.954,1.255,0.954],[1.041,3.667,3.979,1.716,4.761,2.824],[0.0,4.239,0.0,3.013,0.0,2.201],[0.0,3.986,0.602,0.0,4.194,0.602],[0.301,3.155,1.833,2.107,3.787,2.13],[0.0,2.893,0.602,1.806,0.954,2.538],[0.301,3.682,1.114,3.638,2.511,2.874],[0.301,4.382,0.0,0.903,3.337,0.0],[0.602,2.017,2.146,0.0,4.664,0.0],[0.477,3.434,1.602,1.748,4.022,1.146],[0.477,1.886,3.284,0.477,4.577,1.279],[0.0,2.683,0.0,1.724,0.0,0.477],[0.477,3.019,0.0,1.672,0.0,1.255],[0.0,4.549,0.0,1.079,2.816,0.602],[0.602,4.047,1.898,0.778,4.441,0.0],[0.0,2.134,0.954,0.0,4.186,0.0],[0.0,3.796,0.301,2.182,3.818,1.079],[0.845,2.447,2.661,1.255,4.47,1.342],[0.0,2.453,0.301,0.301,4.028,0.0],[0.0,2.972,0.477,0.0,3.845,0.0],[1.544,3.789,2.753,1.114,4.444,0.699],[0.301,2.32,0.477,2.185,4.065,1.114],[0.0,3.656,0.0,2.943,0.0,1.799],[0.0,3.163,0.0,1.653,0.778,1.279],[1.23,2.719,2.433,2.134,3.507,0.699],[0.0,2.161,0.0,0.903,0.699,0.301],[1.0,2.619,1.176,0.845,4.416,1.0],[0.477,3.738,0.778,1.914,3.926,1.785],[0.0,3.432,0.0,3.494,0.0,0.477],[0.778,1.415,0.477,0.0,1.431,0.0],[0.0,3.506,2.79,1.23,4.74,0.699],[0.778,3.17,2.23,0.903,4.535,0.699],[0.0,2.823,0.602,0.301,4.107,0.0],[0.301,1.279,0.477,0.0,4.332,0.0],[0.301,0.301,2.292,0.0,4.948,1.146],[0.0,3.015,0.0,2.097,2.657,1.041],[0.0,3.417,0.477,2.253,3.915,2.207],[0.0,4.001,0.0,2.975,0.602,0.477],[0.0,4.001,0.845,0.699,4.051,0.0],[0.301,2.604,0.301,2.428,0.301,0.699],[0.301,4.735,0.301,1.914,2.19,0.477],[0.477,4.076,1.362,0.699,4.293,0.0],[0.0,3.636,2.064,1.653,4.623,0.301],[0.0,2.694,0.301,1.176,0.602,0.0],[0.0,3.738,0.301,2.949,3.304,0.778],[0.0,3.375,0.0,2.093,3.797,0.301],[1.643,3.778,3.6,0.0,4.555,0.699],[0.0,3.414,0.0,0.301,0.778,0.301],[0.0,3.055,0.0,0.0,1.114,0.0],[0.602,4.348,1.322,2.083,4.155,1.949],[0.0,4.542,0.301,2.41,2.491,1.845],[0.0,0.0,0.0,0.0,2.834,0.0],[0.0,4.384,0.699,2.281,4.76,0.602],[1.643,1.415,1.851,0.602,3.649,0.301],[0.477,4.21,0.699,1.708,3.949,1.041],[0.0,0.602,0.301,0.0,2.946,0.0],[0.0,0.903,1.114,0.699,4.674,0.602],[0.699,4.524,1.176,1.544,4.301,0.699],[0.0,3.735,2.32,1.591,4.677,0.477],[0.0,2.694,0.0,1.748,1.724,0.0],[0.0,3.845,0.0,0.903,2.667,0.0],[1.531,2.33,3.473,0.778,4.621,0.477],[0.0,2.652,0.0,1.176,1.462,0.477],[0.0,3.159,0.477,0.301,3.066,0.301],[0.477,3.15,0.477,0.0,3.953,0.0],[0.0,2.32,2.215,1.663,4.886,0.0],[0.301,2.848,0.602,1.477,2.812,0.0],[0.0,2.779,1.176,1.74,4.129,1.114],[0.0,3.618,0.0,1.204,0.0,1.146],[0.0,4.63,0.0,1.544,0.477,0.477],[0.477,3.488,0.778,0.602,4.037,0.0],[0.903,1.863,2.736,2.041,4.536,0.845],[0.0,2.316,0.0,2.823,2.597,1.23],[0.0,2.041,0.0,1.763,0.0,0.602],[0.301,0.903,0.477,0.301,1.505,0.0],[1.785,0.0,4.638,0.477,4.524,0.0],[0.699,0.301,2.775,0.0,4.175,0.0],[0.0,2.96,0.0,2.396,2.61,1.398],[0.0,2.876,0.301,2.384,2.021,1.544],[0.0,3.84,0.0,3.372,3.177,2.851],[0.0,3.013,0.0,2.737,0.0,1.146],[0.0,4.288,0.0,1.763,0.602,0.477],[1.362,4.128,2.204,0.903,4.569,0.0],[0.0,3.836,0.0,0.778,0.602,0.0],[1.505,3.104,2.715,0.602,4.521,0.903],[1.146,1.531,3.457,1.23,4.646,0.699],[0.0,2.201,0.0,0.477,1.431,0.0],[1.146,2.064,2.732,1.613,4.338,0.954],[0.0,0.602,0.0,0.477,0.0,0.0],[0.0,3.109,0.0,3.023,0.0,2.408],[0.0,3.484,0.0,0.0,3.076,0.301],[1.23,3.54,3.11,0.301,4.681,0.0],[0.301,4.342,0.0,0.301,3.369,0.0],[1.447,2.547,2.614,0.0,4.587,0.0],[1.114,2.483,3.388,1.342,4.622,0.602],[0.0,3.859,0.0,2.878,1.431,2.522],[0.0,2.98,0.0,1.362,2.083,0.778],[0.301,2.989,0.778,0.602,3.523,0.301],[0.301,2.38,1.949,1.724,4.504,1.643],[0.0,4.548,0.301,3.463,0.477,1.322],[1.041,1.505,2.927,0.778,4.462,0.477],[0.0,4.093,0.0,4.07,0.0,2.49],[0.0,3.476,0.602,0.602,3.469,0.602],[0.0,3.807,0.301,0.602,0.301,0.0],[0.477,0.0,0.0,0.0,3.686,0.0],[1.041,1.672,3.788,0.301,4.534,0.477],[0.0,3.529,0.301,0.845,1.623,0.477],[0.845,3.372,2.111,1.924,4.383,2.114],[0.0,2.212,0.0,0.0,3.965,0.0],[0.301,1.991,0.845,0.0,4.546,0.0],[0.0,1.633,2.057,0.301,4.919,0.0],[0.0,3.13,0.0,2.207,2.173,0.699],[0.0,3.878,0.477,2.698,4.03,1.924],[0.0,1.041,0.0,0.0,0.0,0.0],[0.0,4.467,0.0,2.623,1.778,1.079],[0.699,4.323,1.38,0.477,4.337,0.0],[0.602,3.583,0.477,1.58,4.475,0.845],[0.699,3.636,1.079,0.301,3.826,0.0],[1.362,2.111,3.1,1.462,4.493,0.903],[0.0,3.138,0.0,0.903,0.699,0.778],[0.0,2.945,0.0,1.23,0.778,1.322],[0.954,1.949,1.944,0.0,3.438,0.0],[0.0,3.497,0.301,0.477,0.602,0.0],[0.477,4.167,0.778,0.845,4.228,0.301],[0.0,3.553,2.029,1.38,4.631,0.301],[0.0,2.671,0.301,0.301,3.808,0.301],[0.0,3.012,0.301,1.431,1.0,1.146],[0.301,2.246,2.55,0.0,4.816,0.602],[0.0,3.988,0.0,1.934,1.398,0.0],[0.301,3.411,1.255,2.725,4.283,1.978],[0.602,1.763,3.886,1.477,4.826,0.699],[0.0,2.841,0.0,1.398,0.778,0.845],[0.301,3.6,0.0,2.33,0.778,1.38],[0.0,4.017,0.0,3.078,3.657,3.083],[0.778,0.699,2.695,0.0,4.397,0.0],[0.0,4.064,0.0,3.842,0.0,1.079],[0.0,2.658,0.477,0.845,3.548,0.301],[0.0,2.628,0.301,1.519,0.602,1.114],[0.0,2.021,0.301,1.279,0.602,0.477],[0.0,4.624,0.0,1.681,2.415,0.301],[1.041,4.318,1.778,0.477,4.356,0.0],[0.0,3.882,2.083,0.699,4.643,0.301],[0.0,4.353,0.0,3.354,0.0,1.362],[0.0,2.179,0.301,1.079,2.288,0.778],[0.0,3.484,0.301,1.362,1.462,1.398],[0.903,1.978,1.362,0.0,3.779,0.0],[0.0,4.394,0.0,1.544,3.295,0.0],[0.0,2.083,0.0,0.301,0.301,0.0],[0.778,2.772,1.0,1.204,3.555,0.0],[0.477,3.355,0.301,1.991,3.761,0.301],[0.699,3.955,0.301,2.884,3.703,2.501],[0.0,4.09,0.0,1.929,0.477,0.0],[1.146,2.593,2.685,0.0,4.197,0.0],[0.0,4.26,1.491,1.398,3.153,0.602],[0.0,4.645,0.954,0.778,4.004,0.0],[0.778,3.33,0.477,1.041,3.283,0.0],[0.699,3.595,3.214,0.0,4.086,0.0],[0.0,5.072,0.0,2.369,3.376,0.0],[0.602,4.766,0.477,0.477,4.236,0.0],[0.0,4.209,0.0,1.041,4.089,0.602],[0.477,3.869,2.352,0.301,3.851,0.0],[0.0,4.214,0.0,3.112,3.991,2.947],[1.69,3.68,2.613,1.114,4.484,0.602],[0.0,3.767,0.0,3.091,0.301,2.88],[0.0,3.914,0.301,1.954,2.167,1.041],[0.699,4.101,1.602,0.0,4.422,0.0],[0.0,3.751,1.839,0.0,4.567,0.0],[0.0,2.681,0.301,0.301,4.039,0.0],[0.0,2.387,0.301,0.602,1.041,0.0],[0.301,0.0,0.0,0.0,3.534,0.0],[0.477,3.838,3.477,2.371,4.853,1.23],[0.0,3.841,0.0,1.591,1.633,0.301],[0.903,3.16,2.777,0.0,4.398,0.0],[0.301,3.225,2.987,0.845,4.623,0.477],[0.0,4.436,0.0,2.908,1.799,2.845],[0.301,3.04,1.708,1.0,3.847,0.699],[0.0,3.979,0.602,2.519,4.011,2.615],[0.0,3.847,0.477,2.173,0.699,0.0],[0.0,3.919,1.602,1.857,4.521,1.322],[0.845,0.0,3.681,0.0,4.546,0.0],[0.0,2.097,0.0,0.477,0.0,0.0],[0.0,1.944,0.0,0.954,2.473,0.0],[0.0,3.84,2.152,2.647,4.185,2.305],[0.0,4.225,0.0,1.778,3.374,0.301],[0.699,2.662,3.018,1.041,4.769,1.415],[0.0,2.932,0.477,2.662,1.839,2.678],[0.699,0.903,4.002,0.0,4.69,0.0],[0.0,2.851,0.0,1.342,0.903,0.301],[0.0,3.355,0.477,1.69,2.96,1.23],[0.954,2.957,2.898,0.0,4.75,0.0],[0.0,4.325,0.0,3.317,1.826,2.575],[0.0,4.258,0.0,3.027,0.0,0.778],[1.079,3.092,0.954,0.0,4.069,0.301],[0.0,2.803,0.845,0.0,3.361,0.0],[0.0,4.049,0.0,3.341,0.0,2.288],[0.0,3.305,0.0,2.925,0.0,2.483],[1.342,4.397,0.477,1.38,3.069,0.301],[0.778,3.754,0.845,2.47,3.703,1.934],[0.477,0.602,2.847,0.0,4.508,0.301],[0.0,2.436,0.0,0.903,0.301,0.778],[1.041,4.038,1.663,1.771,3.475,2.19],[0.0,3.506,0.0,3.326,3.558,2.81],[0.0,4.137,0.0,2.941,1.431,2.334],[0.903,2.164,3.182,0.954,4.485,0.301],[0.0,2.086,0.0,1.23,0.301,0.699],[0.0,2.711,0.699,0.0,3.464,0.0],[0.0,3.23,2.474,2.32,4.129,2.479],[0.0,2.802,0.0,3.077,0.0,2.415],[0.0,3.42,0.0,1.968,0.477,0.0],[0.301,4.865,0.0,1.398,3.458,0.301],[0.778,4.345,1.544,0.477,4.261,0.0],[0.301,4.402,0.301,3.341,3.333,2.004],[0.0,3.319,2.981,0.699,4.314,0.0],[0.0,4.366,0.845,1.079,3.906,0.0],[0.0,3.237,0.301,0.699,4.68,0.0],[0.0,4.01,0.301,0.699,2.716,0.0],[0.0,1.602,1.041,0.0,4.571,0.0],[0.477,3.708,1.519,0.477,4.482,0.477],[0.301,4.309,0.0,3.947,3.875,1.633],[0.301,3.98,1.415,0.903,4.802,0.0],[0.0,4.167,0.0,2.992,0.699,0.301],[0.301,4.685,0.699,3.552,4.139,1.519],[0.0,3.188,3.302,0.0,4.338,0.301],[0.301,4.267,1.0,0.477,4.176,0.0],[0.0,3.155,0.903,0.699,4.81,0.0],[0.0,4.34,0.0,1.38,3.165,0.699],[0.0,2.875,1.38,0.0,4.357,0.0],[0.954,3.132,1.756,1.863,4.746,1.633],[0.0,4.171,0.0,2.999,0.0,1.519],[0.0,2.19,0.301,0.954,3.337,0.0],[0.699,2.958,0.903,0.0,4.258,0.0],[0.0,3.054,1.255,2.041,4.779,0.903],[0.301,0.602,0.903,0.954,4.211,1.0],[0.0,3.544,0.0,1.716,1.699,0.0],[0.0,3.322,0.301,1.431,2.013,0.0],[1.398,2.905,3.837,1.38,4.661,1.176],[0.0,3.925,0.0,2.405,0.0,1.362],[0.602,3.12,0.845,2.193,3.662,1.176],[0.0,3.179,1.58,1.146,4.407,0.602],[0.602,4.304,0.0,1.544,2.127,0.0],[1.477,3.625,2.521,2.093,4.236,1.708],[0.0,0.903,0.0,0.477,0.0,0.0],[0.0,2.207,1.919,0.477,4.694,0.0],[0.0,4.223,0.0,2.778,0.903,1.415],[0.477,3.916,2.152,2.336,4.201,2.173],[0.0,2.808,0.0,0.301,1.462,0.903],[0.602,3.808,1.114,3.27,4.049,2.483],[0.301,2.972,1.255,0.602,4.042,0.0],[0.778,0.0,0.778,0.0,4.271,0.0],[0.0,3.643,0.477,1.934,4.57,1.041],[0.0,3.722,2.0,2.201,4.406,1.875],[0.301,3.816,0.903,3.515,4.235,2.161],[0.0,3.126,2.272,1.602,4.854,0.602],[0.0,3.008,0.0,1.415,1.924,0.477],[1.204,4.112,3.434,3.907,4.37,3.56],[0.0,3.69,0.0,3.074,1.114,2.638],[0.0,3.707,0.0,3.096,2.262,1.176],[0.0,3.544,0.602,1.279,3.801,0.778],[0.0,3.036,0.0,2.905,4.085,1.857],[0.0,2.68,1.23,1.301,4.311,0.778],[0.0,2.775,0.0,0.301,3.463,0.0],[0.0,3.06,0.0,1.591,0.0,0.845],[0.0,2.642,0.699,0.954,4.032,1.672],[0.477,3.883,1.114,3.576,4.09,2.678],[1.544,3.507,0.602,0.903,4.417,0.301],[0.0,3.178,0.301,1.544,4.122,0.477],[0.301,3.244,0.0,2.276,1.519,1.176],[0.0,4.073,0.0,2.625,1.447,2.367],[0.845,2.025,3.172,1.041,4.579,1.415],[0.0,3.33,0.0,1.602,1.0,1.114],[0.845,3.344,1.491,0.477,4.211,0.301],[0.0,3.735,0.0,1.041,1.949,0.301],[0.0,2.59,0.0,0.954,4.019,0.602],[0.301,1.699,1.114,0.954,3.851,0.0],[1.301,3.045,2.594,1.568,4.418,1.778],[0.0,3.565,0.0,2.22,0.0,0.477],[2.522,3.352,2.522,2.274,3.923,3.005],[0.0,4.804,0.0,3.036,4.294,3.092],[0.301,3.941,0.0,1.301,0.0,1.0],[0.778,3.55,1.74,2.061,4.459,1.204],[1.0,1.38,3.006,0.699,4.573,1.544],[0.0,1.204,0.0,0.0,0.0,0.0],[0.0,3.8,1.69,2.715,4.365,1.491],[0.301,2.057,0.0,0.778,4.439,0.0],[0.0,2.378,0.0,1.462,0.477,0.0],[0.0,0.954,0.301,0.301,0.699,0.0],[0.301,4.327,0.0,1.681,2.225,0.477],[0.477,2.1,1.58,0.0,4.336,0.301],[0.0,2.958,0.0,0.477,3.487,0.0],[0.0,2.874,0.477,1.833,1.176,0.0],[0.301,4.013,0.602,2.63,3.866,2.616],[0.602,3.586,2.528,2.613,4.488,2.511],[0.0,3.283,0.0,3.083,0.0,2.548],[0.0,3.729,0.954,2.848,3.123,2.412],[0.0,2.848,0.0,2.127,0.301,1.785],[0.0,4.735,0.0,3.637,4.013,0.903],[0.0,3.516,2.215,0.0,4.116,0.0],[0.477,4.855,0.0,1.591,3.854,0.0],[0.0,3.979,0.301,1.114,4.813,0.477],[0.0,3.689,0.0,0.0,3.226,0.0],[0.0,3.664,1.38,0.954,4.378,0.477],[0.699,3.946,1.462,0.845,4.301,0.602],[0.0,3.961,2.013,2.923,4.631,2.334],[0.0,2.583,0.0,1.881,2.097,1.716],[0.0,2.798,2.71,0.845,4.754,0.301],[0.0,2.13,0.0,0.845,1.255,0.602],[0.699,3.217,0.0,1.699,4.242,2.14],[0.477,2.225,0.0,0.301,3.04,0.477],[0.699,2.864,2.393,0.778,4.711,1.114],[0.778,3.341,0.903,0.954,4.006,1.0],[0.0,2.461,0.301,1.362,3.564,1.079],[0.0,2.29,2.754,1.431,4.697,0.0],[0.0,3.347,0.0,0.954,0.699,0.0],[0.301,2.009,3.176,0.954,4.881,0.954],[0.0,1.279,1.623,1.919,4.282,1.204],[0.0,0.903,0.0,0.0,2.619,0.0],[0.301,2.422,0.301,1.491,2.037,0.0],[0.954,3.641,1.568,0.301,4.371,0.0],[2.369,2.859,3.061,0.301,4.833,0.0],[0.0,4.932,0.301,3.993,3.748,3.815],[0.0,4.335,0.0,2.09,3.33,1.462],[0.0,3.984,0.0,1.643,3.27,0.0],[0.0,3.255,0.0,2.25,0.0,1.477],[0.0,2.975,0.0,1.663,3.612,0.301],[0.778,2.7,1.591,0.301,4.326,0.477],[0.699,2.534,0.477,0.778,3.903,0.0],[0.0,3.554,0.0,2.713,0.0,0.301],[0.0,3.521,0.0,1.146,0.699,0.0],[0.477,3.362,0.301,0.0,2.79,0.0],[0.0,3.198,2.631,2.193,4.589,0.477],[0.301,4.322,0.0,2.799,2.687,1.716],[0.0,3.727,0.0,2.111,4.005,1.919],[0.778,3.171,1.519,0.602,4.326,0.0],[0.0,2.859,0.0,0.845,0.699,0.602],[1.204,2.721,2.272,0.301,4.194,0.845],[0.602,1.342,2.34,0.301,4.117,0.0],[0.0,4.257,0.477,0.903,3.829,0.477],[0.0,4.858,0.0,2.99,3.987,1.38],[0.301,0.0,0.602,0.301,3.738,0.301],[0.0,2.9,0.0,2.1,0.0,2.009],[0.0,4.45,0.0,2.146,3.613,1.342],[0.477,3.406,0.903,2.799,4.273,2.201],[0.0,2.972,0.602,0.903,4.291,0.0],[0.301,2.963,0.602,1.041,3.516,0.699],[1.279,2.567,1.987,1.322,4.184,0.954],[0.0,3.856,0.301,1.556,1.505,1.146],[1.322,1.146,3.571,0.477,4.617,0.0],[0.0,3.951,0.0,2.29,0.699,2.017],[0.845,3.171,1.792,0.301,4.328,0.301],[0.699,3.394,0.845,2.781,3.779,2.435],[0.477,4.079,0.903,2.519,4.274,1.799],[0.602,3.3,0.301,2.498,2.176,2.744],[0.301,2.215,0.477,0.0,3.922,0.0],[0.0,1.279,2.013,0.778,4.535,0.301],[0.0,3.707,0.0,0.0,0.301,0.0],[0.301,1.919,0.699,1.398,3.634,0.0],[0.0,4.065,0.0,2.894,1.74,1.623],[1.732,3.15,3.306,1.748,4.503,0.0],[0.0,3.16,0.0,1.114,0.0,0.954],[0.301,2.613,1.0,0.0,4.543,0.301],[0.0,3.88,0.0,0.954,3.362,0.0],[1.079,4.615,2.149,1.0,4.569,0.602],[0.0,1.944,0.0,1.23,0.699,0.0],[0.477,2.872,0.778,1.519,3.523,0.0],[0.0,2.049,1.708,1.176,4.568,0.477],[0.0,3.571,0.0,2.322,1.763,2.427],[0.0,3.129,0.301,1.079,1.041,0.0],[0.0,3.088,0.0,0.477,3.597,0.778],[0.602,1.672,0.477,0.0,3.307,0.0],[0.699,3.057,1.531,0.301,4.645,0.477],[0.0,4.458,0.301,2.111,1.886,0.903],[0.301,4.018,0.0,1.38,4.629,1.491],[0.0,2.984,0.0,2.336,2.427,1.342],[0.0,5.12,0.0,4.852,0.0,3.853],[0.477,0.477,0.0,0.0,3.166,0.0],[2.149,3.98,4.096,4.705,4.27,3.15],[0.0,2.508,0.477,1.863,3.048,1.519],[0.0,3.278,0.0,1.079,0.778,0.0],[0.778,3.527,0.602,2.314,3.951,0.0],[0.778,4.104,2.549,2.017,4.44,1.672],[0.0,0.954,0.0,0.0,0.301,0.0],[0.0,3.736,0.301,1.602,4.551,0.0],[1.415,1.342,1.041,1.681,3.666,0.0],[1.041,1.079,1.556,0.0,4.702,0.845],[0.0,3.347,0.0,1.38,2.54,0.301],[0.699,2.061,1.991,0.0,4.756,0.301],[0.0,1.845,0.301,0.903,2.639,0.477],[0.0,2.508,0.0,2.985,0.602,2.079],[2.594,2.983,0.0,2.21,2.204,1.833],[0.0,3.007,0.0,3.336,2.064,1.477],[0.477,3.458,0.477,0.778,4.403,0.699],[0.301,4.717,0.0,3.873,3.86,1.519],[0.0,3.75,2.68,1.041,4.061,0.0],[0.477,4.937,0.301,1.204,3.976,0.0],[0.0,4.074,0.954,1.176,4.809,0.0],[0.0,4.435,0.0,1.531,2.95,0.0],[0.0,4.267,1.74,0.301,4.237,0.0],[0.0,3.15,0.0,2.334,0.477,1.813],[0.0,3.702,0.0,1.949,0.477,0.301],[0.0,3.252,0.0,2.639,4.11,1.146],[1.519,3.606,1.301,3.427,3.913,3.057],[0.477,3.048,3.537,2.654,4.71,1.556],[0.0,4.077,0.0,2.265,0.477,1.556],[0.0,4.236,0.0,1.279,4.383,0.301],[0.477,3.599,1.724,1.079,4.465,0.0],[0.0,3.387,0.0,0.845,0.699,0.602],[0.301,3.987,1.839,2.509,4.708,2.292],[0.0,3.461,0.0,0.0,2.037,0.0],[1.38,3.926,2.884,2.173,4.491,1.079],[0.301,3.487,0.301,2.127,1.491,0.0],[0.0,2.722,2.619,0.301,4.657,1.602],[0.0,3.303,0.0,2.332,2.939,1.991],[0.477,2.781,0.301,1.833,3.986,1.643],[0.0,2.98,0.0,0.301,3.452,0.301],[0.0,2.595,0.0,0.301,1.919,0.0],[0.0,2.508,0.301,0.845,4.351,0.0],[0.699,3.929,0.602,1.176,3.349,0.0],[0.0,2.577,1.633,0.0,4.651,0.0],[0.0,2.121,0.0,0.0,1.875,0.0],[0.477,0.0,0.0,0.0,4.046,0.0],[0.0,0.477,2.616,0.0,4.46,0.0],[0.0,3.702,0.301,1.732,3.043,0.477],[0.845,4.067,3.031,0.903,4.481,0.699],[0.0,4.509,0.0,0.301,3.942,0.0],[0.301,3.259,0.778,1.857,3.898,0.0],[1.833,1.204,2.948,0.602,4.527,1.0],[0.0,2.935,0.0,1.398,0.301,0.0],[0.602,1.908,1.176,0.301,4.251,0.903],[0.0,0.845,2.36,0.0,4.711,0.0],[0.0,2.394,0.0,1.38,3.641,0.301],[0.0,2.696,0.0,0.0,0.301,1.23],[0.0,3.621,0.301,0.845,0.477,0.0],[1.672,1.756,2.258,1.643,3.382,0.301]];
+
+function scatterChart() {
+  if (!PIVOT || !PIVOT.length) return;
+  const panels = [[0, 1, "layer 14"], [2, 3, "layer 20"], [4, 5, "layer 23"]];
+  const W = 880, H = 320, m = { t: 30, r: 8, b: 46, l: 48 }, gap = 34;
+  const pw = (W - m.l - m.r - 2 * gap) / 3, ph = H - m.t - m.b;
+  const MAX = 5.2; // log10(rank+1) ceiling
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}` });
+  const ticks = [0, 1, 2, 3, 4, 5], tickLab = ["1", "10", "100", "1k", "10k", "100k"];
+
+  panels.forEach(([gi, fi, label], pi) => {
+    const x0 = m.l + pi * (pw + gap);
+    const x = v => x0 + pw * v / MAX;
+    const y = v => m.t + ph * (1 - v / MAX);
+    ticks.forEach((t, i) => {
+      el("line", { x1: x(t), x2: x(t), y1: m.t, y2: m.t + ph, stroke: "var(--grid)" }, svg);
+      el("line", { x1: x0, x2: x0 + pw, y1: y(t), y2: y(t), stroke: "var(--grid)" }, svg);
+      const tx = el("text", { x: x(t), y: m.t + ph + 15, "text-anchor": "middle", "font-size": 9.5 }, svg);
+      tx.textContent = tickLab[i];
+      if (pi === 0) {
+        const ty = el("text", { x: x0 - 6, y: y(t) + 3.5, "text-anchor": "end", "font-size": 9.5 }, svg);
+        ty.textContent = tickLab[i];
+      }
+    });
+    let sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+    const n = PIVOT.length;
+    for (const row of PIVOT) {
+      const gx = Math.min(row[gi], MAX), fy = Math.min(row[fi], MAX);
+      el("circle", { cx: x(gx).toFixed(1), cy: y(fy).toFixed(1), r: 2, fill: "var(--teal)", opacity: 0.3 }, svg);
+      sx += gx; sy += fy; sxx += gx * gx; syy += fy * fy; sxy += gx * fy;
+    }
+    const r = (n * sxy - sx * sy) / Math.sqrt((n * sxx - sx * sx) * (n * syy - sy * sy));
+    const title = el("text", { x: x0 + pw / 2, y: 16, "text-anchor": "middle", "font-size": 11.5, "font-weight": 600, fill: "var(--ink)" }, svg);
+    title.textContent = label;
+    const rt = el("text", { x: x0 + pw - 4, y: m.t + 14, "text-anchor": "end", "font-size": 10.5, fill: "var(--violet)" }, svg);
+    rt.textContent = `r = ${r >= 0 ? "+" : ""}${r.toFixed(2)}`;
+    const xl = el("text", { x: x0 + pw / 2, y: H - 18, "text-anchor": "middle", "font-size": 10 }, svg);
+    xl.textContent = "ghost rank of actual input token →";
+  });
+  const yl = el("text", { x: 12, y: m.t + ph / 2, "font-size": 10, transform: `rotate(-90 12 ${m.t + ph / 2})`, "text-anchor": "middle" }, svg);
+  yl.textContent = "fwd rank of final prediction →";
+  const cap = el("text", { x: m.l + (W - m.l - m.r) / 2, y: H - 4, "text-anchor": "middle", "font-size": 9.5 }, svg);
+  cap.textContent = "held ← input axis → dissolved        converged ↓ output axis ↑ unsettled";
+  document.getElementById("chart-scatter").appendChild(svg);
+}
+
+accChart(); barChart(); faces(); swaps(); frenchGrid(); scatterChart();
+</script>

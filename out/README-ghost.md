@@ -34,6 +34,10 @@ this because it projects everything onto "next token".
 - `ghost_patch.py` — causal test: substitute a position's L23 ghost top-1
   for its actual token, measure prediction preservation vs shuffled-ghost
   and random controls. Writes `ghost_patch.json`.
+- `transition_analysis.py` — jump-vs-slide: per-position wall-to-wall
+  transit widths and timing on both axes (cached data only).
+- `ghost-lens-results.html` — the self-contained interactive results page
+  (all data inlined; open locally).
 - `fit_offset.py` — fits the offset-resolved K_Δ lens (see below).
 - `backward_lens.pt`, `forward_lens.pt` — fitted lenses (not committed,
   ~18 MB each; reproduce with `fit_ghost.py`).
@@ -75,6 +79,14 @@ at 33% with median rank 4 — those ghosts are functional synonyms. Deeply
 dissolved junk (rank ≥ 100) barely beats control (9.4% vs 8.2%): by L23 the
 state has left the input manifold and the nearest input token is a lossy
 shadow, not a causal stand-in.
+
+**5. Release is a snap; convergence is a climb** (`transition_analysis.py`).
+97% of input-identity wall-to-wall trips (ghost rank <10 → >1000) complete
+within a six-layer window (52% within three), departures synchronized at
+L17–20. Output lock-in transits are 3–15 layers wide with departures
+staggered from L2. Ordering at 749 positions with both transitions: output
+locks first 50%, same layer 28%, input dissolves first 22% — the model
+mostly doesn't release a token's identity until its prediction is settled.
 
 Metric-robustness: deep-layer dissolution is identical under l2, dot, and
 cosine readouts (single-prompt probe) — not an artifact of the norm term.
