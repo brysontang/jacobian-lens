@@ -38,9 +38,13 @@ this because it projects everything onto "next token".
   transit widths and timing on both axes (cached data only).
 - `ghost-lens-results.html` — the self-contained interactive results page
   (all data inlined; open locally).
-- `fit_offset.py` — fits the offset-resolved K_Δ lens (see below).
-- `backward_lens.pt`, `forward_lens.pt` — fitted lenses (not committed,
-  ~18 MB each; reproduce with `fit_ghost.py`).
+- `fit_offset.py` — fits the offset-resolved K_Δ lens (see result 6).
+- `eval_offset.py` — K_Δ distance-selectivity matrices, top-1 provenance,
+  French-prompt profile grids. Writes `offset_results.json`.
+- `offset_deflate.py` — explaining-away control: re-scores Δ>0 bins after
+  subtracting the self component K₀e_self. Appends into `offset_results.json`.
+- `backward_lens.pt`, `forward_lens.pt`, `offset_lens.pt` — fitted lenses
+  (not committed, 18–88 MB; reproduce with `fit_ghost.py` / `fit_offset.py`).
 
 ## Results (2026-07-07)
 
@@ -92,12 +96,41 @@ mostly doesn't release a token's identity until its prediction is settled.
 Metric-robustness: deep-layer dissolution is identical under l2, dot, and
 cosine readouts (single-prompt probe) — not an artifact of the norm term.
 
-## Next: offset-resolved K_Δ ("what, and from where")
+**6. The mean transport has no "from where"** (`jlens/offset.py`,
+`fit_offset.py`, `eval_offset.py`). The fitted K sums over target-position
+offsets, blind to *where* information came from; the offset-resolved family
+`K_Δ = E[∂h_l[p+Δ]/∂emb[p]]` (cotangent seeded at a single target per
+backward pass, gradients binned by lookback distance; 3 layers × 14 bands,
+16 prompts, ~6.5 h) was meant to fix that. Findings, held-out eval:
 
-The fitted K sums over target-position offsets (grad at emb position p mixes
-`∂h_l[p']/∂emb[p]` for all p' ≥ p), so every readout above is blind to
-*where* information came from. `jlens/offset.py` fits one matrix per lookback
-distance, `K_Δ = E[∂h_l[p+Δ]/∂emb[p]]`, by seeding the cotangent at a single
-target position per backward pass and binning gradients by distance. Decoding
-a position against the K_Δ family gives a ghost profile over distance — the
-instrument for cross-position pivot detection that experiments 3–4 lacked.
+- **Norms**: the Δ=0 self-path dominates everywhere but grows only 2.7×
+  from L14→L23 while every cross-position band roughly triples — relative
+  neighbor-transported mass rises into the handoff. Non-monotonic bump at
+  Δ=12–15; uptick in the far band (96–127).
+- **Selectivity (the null)**: scoring each band's readout against the token
+  exactly d back, normalized by a shuffled-target control: the only strong
+  column is d=0 — every band leaks the *self* token (L14 Δ=1 band: self 19×
+  above chance, its own matched neighbor 1.4×). All K_Δ images share one
+  token-content channel; the score matches whatever is loudest in h. Top-1
+  of every Δ>0 band is ~100% out-of-prompt junk.
+- **The one echo**: adjacent tokens at L20 — 2.9× (Δ=1), 2.0× (Δ=2) — peak
+  exactly in the migration band, gone by L23.
+- **Not masked, absent**: deflating h′ = h − K₀e_self (oracle explaining-away
+  of the self channel) changes nothing (2.9× → 2.8×). The neighbor signal
+  isn't hiding under self; it isn't linearly there in the mean.
+- **Far-band norms are content-free**: ratios ≤1.0 at Δ≥32 — a sink-like
+  pathway, loud in gradient, silent in token-specific signal (BOS itself was
+  excluded by skip_first=16).
+
+Verdict: *what — itself; from where — unattributable in the mean.* Attention
+routing is content-dependent, so averaging over prompts/positions destroys
+source attribution. This extends "dissolution, not permutation" to the
+transport domain: even mid-migration a position never becomes readable as
+its neighbors.
+
+## Next: per-prompt Jacobians
+
+Per-position pivot attribution needs the *unaveraged* `∂h_l[t]/∂emb[p]` on a
+specific prompt — seed a handful of handoff-band targets (e.g. the mercado
+positions) and read the true per-source decomposition. Expensive per
+position, cheap in total: a dozen targets, not a corpus.

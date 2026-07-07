@@ -253,12 +253,47 @@ a { color: var(--teal); }
   </div>
   <p>Paired significance z = 2.7 vs shuffled, 3.8 vs random (320 positions). The gradient matters: near-miss ghosts (<span class="mono">marks → marking</span>) are working substitutes the model accepts; fully dissolved junk barely beats control. By L23 the state has rotated off the input manifold — it still <em>leans</em> toward its output (ghosts drift toward "the input that would have caused this prediction"), but the information no longer compresses into any single vocabulary token.</p>
 
+  <h2>6 &nbsp;<span class="no">/</span>&nbsp; What, and from where — the offset-resolved lens</h2>
+  <p>Everything above is blind to <em>where</em> information came from: the fitted <code>K</code> sums <code>∂h[t]/∂emb[p]</code> over every target <code>t ≥ p</code>. The offset-resolved family <code>K_Δ = E[∂h_l[p+Δ]/∂emb[p]]</code> separates that by lookback distance — one matrix per band, fitted by seeding the cotangent at a single target position per backward pass (3 layers × 14 distance bands, 16 WikiText prompts, ~6.5 h). Decoding a state against the whole family should give a ghost <em>profile over distance</em>: what token the state behaves as if it received here, one back, eight back…</p>
+</div>
+
+<div class="wide">
+  <div class="panel">
+    <div id="chart-norms"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--teal)"></span>layer 14</span>
+      <span><span class="sw" style="background:var(--amber)"></span>layer 20</span>
+      <span><span class="sw" style="background:var(--violet)"></span>layer 23</span>
+    </div>
+  </div>
+  <p class="note" style="max-width:720px;margin:0.8rem auto 0;">Transport mass by distance: <code>‖K_Δ‖_F/√d</code>, log scale. The self-path (Δ=0) dominates everywhere, but it grows only 2.7× from L14 to L23 while every cross-position band roughly triples — the stream picks up proportionally more neighbor-transported mass exactly as it approaches the handoff. Note the bump at Δ=12–15 and the uptick in the last band.</p>
+</div>
+
+<div class="col">
+  <p>But norm is not information. The test that matters: does the Δ-band readout actually recover the token sitting exactly <em>d</em> positions back — and only at its own distance? Below, each cell scores one readout band against one probe distance on the held-out prompts: color is how much better than a shuffled-target control the readout ranks that token. A working “what-and-from-where” instrument would light up the outlined diagonal.</p>
+</div>
+
+<div class="wide">
+  <div class="panel"><div id="chart-selmap"></div></div>
+  <p class="note" style="max-width:720px;margin:0.8rem auto 0;">It doesn't. The only strong column is <em>d</em>=0 — every band's readout leaks the <em>self</em> token (at L14 the Δ=1 band ranks the self token 19× above chance but its own matched neighbor only 1.4×). All K_Δ images share one token-content channel, and the score matches whatever is loudest in the state: itself. The lone genuine cross-position signal is adjacent tokens at L20 — 2.9× at Δ=1, 2.0× at Δ=2 — peaking exactly in the migration band and gone by L23. The fat far-lookback norms produce <em>no</em> token-specific signal (ratios ≤1): a sink-like pathway, loud in gradient, silent in content.</p>
+</div>
+
+<div class="col">
+  <p><strong>Is the neighbor signal just drowned out by the self channel?</strong> No. Under the additive linear model the self component can be explained away exactly — deflate <code>h′ = h − K₀e_self</code> using the actual input token, then re-score the Δ&gt;0 bands. Nothing emerges:</p>
+  <div class="stat-row">
+    <div class="stat"><div class="v teal">2.9×</div><div class="k">best cross-position signal anywhere: the adjacent token under the Δ=1 readout at layer 20</div></div>
+    <div class="stat"><div class="v">2.8×</div><div class="k">the same cell after subtracting the self component — nothing was being masked</div></div>
+    <div class="stat"><div class="v">1.2×</div><div class="k">that signal at layer 23 — vanishes through the handoff</div></div>
+    <div class="stat"><div class="v violet">≤1.0×</div><div class="k">far-lookback bands (Δ≥32), despite their norm uptick</div></div>
+  </div>
+  <p>So the answer to “what, and from where” is: <strong>what — itself; from where — unattributable in the mean.</strong> The <em>average</em> linear transport contains no distance-indexed copy structure. That is itself a result: attention routing is content-dependent, so averaging over prompts and positions washes source attribution out — and it sharpens section 2's story. Even mid-migration, a position never becomes readable as its <em>neighbors</em>; context arrives as a diffuse haze, not as relocated tokens. Dissolution, not permutation, now confirmed in the transport domain too. The faint adjacent-token echo at L20, at the handoff layer and nowhere else, is the one place the haze briefly has a direction.</p>
+
   <h2>Caveats &amp; next</h2>
   <ul>
     <li><strong>Not causal.</strong> K is an <em>average</em> Jacobian over 24 WikiText prompts; the ghost input is the nearest preimage under mean linearized dynamics, not a claim about what the network actually received.</li>
     <li><strong>One model, one seed.</strong> Qwen3-0.6B, layers {2,5,…,26}. Qwen3.5-2B was benchmarked and rejected (fp16 gradients NaN past layer 20 on its hybrid linear-attention fallback; &gt;24 h fit on this machine).</li>
     <li><strong>Deep-layer dissolution is metric-robust.</strong> A single-prompt probe confirmed l2, dot, and cosine readouts all agree at layer 26 — the identity loss is real, not an artifact of the −½‖Ke_v‖² norm term.</li>
-    <li><strong>Next: offset-resolved K<sub>Δ</sub></strong> — one matrix per lookback distance, <code>K_Δ = E[∂h_l[p+Δ]/∂emb[p]]</code>, giving each position a ghost <em>profile over distance</em>: "what, and from where." This is the cross-position instrument that sections 2 and 5 lacked — fit in progress.</li>
+    <li><strong>K<sub>Δ</sub> verdict (section 6):</strong> the offset-resolved lens was fitted and evaluated — the mean transport carries no distance-indexed source information, so per-position pivot attribution needs the <em>unaveraged</em> per-prompt Jacobian <code>∂h_l[t]/∂emb[p]</code>, seeded at a handful of handoff-band positions rather than a corpus. That's the natural next instrument.</li>
   </ul>
   <p class="note">Code: <span class="mono">brysontang/jacobian-lens</span>, branch <span class="mono">backward-lens</span> — <span class="mono">jlens/backward.py</span>, fit/eval scripts in <span class="mono">out/</span>. Companion to Anthropic's "Verbalizable Representations Form a Global Workspace in Language Models."</p>
 </div>
@@ -476,5 +511,78 @@ function scatterChart() {
   document.getElementById("chart-scatter").appendChild(svg);
 }
 
-accChart(); barChart(); faces(); swaps(); frenchGrid(); scatterChart();
+const OFFSET = {"layers":[14,20,23],"bin_labels":["0","1","2","3","4\u20135","6\u20137","8\u201311","12\u201315","16\u201323","24\u201331","32\u201347","48\u201363","64\u201395","96\u2013127"],"probe_d":[0,1,2,3,4,6,8,12,16,24,32,48,64,96],"norms":{"14":[10.122,1.467,0.984,0.749,0.385,0.281,0.184,0.162,0.105,0.101,0.074,0.066,0.07,0.152],"20":[25.637,4.919,2.927,2.355,1.152,0.829,0.531,0.596,0.383,0.343,0.252,0.223,0.233,0.476],"23":[27.322,5.41,4.195,3.856,1.937,1.36,0.87,1.09,0.706,0.651,0.482,0.398,0.425,0.794]},"ratio":{"14":[[40363.0,3.94,1.4,1.2,1.26,1.07,1.11,1.1,1.09,1.02,1.01,0.87,0.7,0.71],[18.88,1.43,1.1,1.1,1.06,1.03,1.02,1.03,0.98,0.98,0.93,1.05,0.95,0.92],[3.12,1.34,1.18,1.12,1.08,1.09,1.06,1.09,1.08,1.03,1.03,1.0,0.92,0.88],[1.62,1.09,1.1,1.05,1.04,1.01,0.99,1.03,1.03,1.03,1.12,1.1,1.01,0.98],[2.24,1.25,1.17,1.19,1.12,1.01,1.02,1.03,0.99,1.06,1.0,1.03,1.16,1.16],[2.18,1.51,1.09,1.16,1.14,1.08,1.09,1.06,1.06,1.01,0.91,0.95,1.11,0.83],[1.72,1.14,1.06,1.08,1.04,1.02,1.04,1.01,1.01,1.01,1.01,0.97,0.95,0.86],[1.11,1.07,1.07,1.04,1.02,1.03,1.02,1.03,1.0,1.04,0.98,0.93,1.01,0.82],[1.02,1.01,1.0,1.03,1.0,0.98,1.0,1.0,1.01,0.97,1.01,1.02,1.02,0.95],[1.11,1.01,0.99,1.02,1.02,0.98,0.99,0.99,1.03,1.06,1.03,0.95,1.02,0.91],[0.88,0.97,0.98,0.94,0.99,0.96,1.01,1.0,0.98,1.04,1.01,0.98,0.99,0.95],[0.81,0.93,0.98,0.98,1.0,0.97,0.96,1.0,0.96,1.03,1.0,0.99,1.04,0.86],[0.93,0.97,1.0,0.99,0.98,0.98,0.99,1.0,0.97,0.97,0.98,0.97,0.94,0.93],[0.97,1.0,0.99,1.0,0.99,0.99,0.99,0.99,1.0,1.0,1.01,1.0,1.0,0.99]],"20":[[23380.0,1.63,1.2,1.11,1.1,1.02,1.01,0.96,1.04,1.07,1.02,0.94,0.85,0.84],[4.27,2.86,1.4,1.21,1.08,1.06,1.04,1.03,1.02,1.0,0.99,1.02,0.92,0.94],[2.59,2.0,1.5,1.35,1.17,1.08,1.1,1.04,1.05,0.99,0.98,1.02,0.91,0.91],[1.46,1.21,1.18,1.1,1.05,1.03,1.03,1.02,1.1,1.03,1.1,0.98,1.09,1.08],[1.34,1.24,1.14,1.1,1.09,1.03,1.01,0.99,0.99,1.01,1.01,1.03,1.0,1.07],[1.51,1.36,1.27,1.07,1.12,1.1,1.05,1.07,1.04,1.03,1.14,1.07,1.11,0.95],[1.4,1.2,1.13,1.08,1.07,1.03,1.01,1.03,1.06,0.99,1.03,0.96,0.99,0.93],[1.19,1.19,1.15,1.04,1.09,1.02,1.0,1.05,0.98,0.97,1.01,1.04,0.97,0.92],[0.99,1.07,1.07,1.04,1.03,1.09,1.04,1.01,1.01,1.02,1.04,0.95,0.94,0.91],[1.18,1.0,0.98,1.03,0.99,0.96,1.05,0.93,1.1,1.02,0.98,0.9,0.87,0.78],[0.92,0.91,0.97,1.01,1.01,1.03,1.07,1.0,1.02,0.93,1.05,0.93,0.84,1.04],[0.88,0.92,1.01,0.97,1.03,0.97,0.97,1.02,1.02,0.97,1.0,0.93,0.9,0.88],[0.81,0.94,0.96,0.98,0.98,0.94,1.13,1.01,1.0,0.87,0.9,0.87,0.79,0.72],[0.79,0.88,0.93,0.93,0.94,0.99,0.99,0.96,0.99,1.05,1.08,1.12,0.92,0.76]],"23":[[23.48,1.25,1.11,1.11,1.03,1.0,1.03,0.99,0.99,1.06,0.99,0.96,0.91,0.89],[1.5,1.19,1.06,1.05,1.04,1.01,1.08,1.05,1.0,0.99,0.99,0.99,0.86,0.8],[1.23,1.14,1.09,1.07,1.07,1.01,1.01,1.02,1.03,0.99,1.01,0.96,0.98,0.97],[1.06,0.98,0.98,0.99,0.99,1.01,1.01,1.0,0.98,0.99,1.03,1.05,1.04,0.96],[1.04,1.02,1.03,1.02,1.02,1.0,1.0,1.0,1.01,1.01,0.99,1.02,1.0,1.01],[1.13,1.1,1.06,1.03,1.05,1.05,1.0,1.01,1.0,1.04,1.04,1.05,1.03,0.94],[1.16,1.08,1.12,1.09,1.06,1.05,1.05,1.02,1.04,1.03,1.04,1.0,0.97,0.94],[1.1,1.05,1.03,1.03,1.05,1.03,0.97,1.02,0.99,1.0,1.04,1.03,0.99,0.89],[1.05,1.03,1.02,1.02,1.04,1.03,1.02,1.02,1.02,1.03,1.03,1.0,0.97,1.02],[1.02,1.05,1.04,1.02,1.03,1.1,1.04,1.03,0.95,1.03,1.02,1.01,0.9,0.85],[0.98,1.06,1.04,0.99,1.01,1.05,1.01,0.99,0.97,1.0,1.0,0.98,0.98,0.93],[1.06,0.99,1.0,1.03,1.02,1.03,1.05,1.01,1.0,1.0,1.01,0.99,0.87,0.91],[1.0,0.99,1.02,1.0,1.07,1.05,1.07,1.08,0.99,1.04,1.01,1.1,0.96,0.94],[0.98,1.13,0.99,1.0,1.02,0.96,1.06,1.0,1.04,1.06,1.1,1.09,0.92,0.89]]}};
+
+// ---- section 6: offset-resolved lens --------------------------------------
+function normChart() {
+  const W = 880, H = 300, m = { t: 18, r: 20, b: 48, l: 52 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const NB = OFFSET.bin_labels.length;
+  const x = i => m.l + iw * (i + 0.5) / NB;
+  const lo = Math.log10(0.05), hiv = Math.log10(40);
+  const y = v => m.t + ih * (1 - (Math.log10(v) - lo) / (hiv - lo));
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}` });
+  for (const tv of [0.1, 0.3, 1, 3, 10, 30]) {
+    el("line", { x1: m.l, x2: W - m.r, y1: y(tv), y2: y(tv), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+    const t = el("text", { x: m.l - 8, y: y(tv) + 4, "text-anchor": "end", "font-size": 11 }, svg);
+    t.textContent = tv;
+  }
+  OFFSET.bin_labels.forEach((lb, i) => {
+    const t = el("text", { x: x(i), y: H - m.b + 18, "text-anchor": "middle", "font-size": 9 }, svg);
+    t.textContent = lb;
+  });
+  const xl = el("text", { x: m.l + iw / 2, y: H - 6, "text-anchor": "middle", "font-size": 11 }, svg);
+  xl.textContent = "lookback distance \u0394 (tokens)";
+  const colors = { 14: "var(--teal)", 20: "var(--amber)", 23: "var(--violet)" };
+  for (const l of OFFSET.layers) {
+    const pts = OFFSET.norms[l].map((v, i) => [x(i), y(v)]);
+    el("path", { d: "M" + pts.map(p => p.map(v => v.toFixed(1)).join(",")).join("L"),
+      fill: "none", stroke: colors[l], "stroke-width": 2.5, "stroke-linejoin": "round" }, svg);
+    for (const p of pts) el("circle", { cx: p[0].toFixed(1), cy: p[1].toFixed(1), r: 3, fill: colors[l] }, svg);
+  }
+  document.getElementById("chart-norms").appendChild(svg);
+}
+
+function selHeat() {
+  const NB = OFFSET.bin_labels.length;
+  const W = 880, m = { t: 30, r: 10, b: 64, l: 96 }, gap = 24;
+  const pw = (W - m.l - m.r - 2 * gap) / 3;
+  const cell = pw / NB, ph = cell * NB;
+  const H = m.t + ph + m.b;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}` });
+  OFFSET.layers.forEach((l, pi) => {
+    const x0 = m.l + pi * (pw + gap);
+    const title = el("text", { x: x0 + pw / 2, y: 16, "text-anchor": "middle", "font-size": 11.5, "font-weight": 600, fill: "var(--ink)" }, svg);
+    title.textContent = `layer ${l}`;
+    for (let b = 0; b < NB; b++) for (let d = 0; d < NB; d++) {
+      const r = OFFSET.ratio[l][b][d];
+      const a = Math.max(0, Math.min(1, (r - 1) / 3));
+      el("rect", { x: (x0 + d * cell).toFixed(1), y: (m.t + b * cell).toFixed(1),
+        width: (cell - 0.7).toFixed(1), height: (cell - 0.7).toFixed(1),
+        fill: a > 0 ? "var(--teal)" : "var(--grid)",
+        opacity: a > 0 ? (0.2 + 0.8 * a).toFixed(2) : 0.3 }, svg);
+      if (b === d) el("rect", { x: (x0 + d * cell).toFixed(1), y: (m.t + b * cell).toFixed(1),
+        width: (cell - 0.7).toFixed(1), height: (cell - 0.7).toFixed(1),
+        fill: "none", stroke: "var(--amber)", "stroke-width": 1.1 }, svg);
+    }
+    OFFSET.probe_d.forEach((d, i) => {
+      if (i % 2) return;
+      const t = el("text", { x: x0 + (i + 0.5) * cell, y: m.t + ph + 14, "text-anchor": "middle", "font-size": 8.5 }, svg);
+      t.textContent = d;
+    });
+    const xl = el("text", { x: x0 + pw / 2, y: m.t + ph + 30, "text-anchor": "middle", "font-size": 9.5 }, svg);
+    xl.textContent = "probe distance d (tokens back)";
+  });
+  OFFSET.bin_labels.forEach((lb, b) => {
+    const t = el("text", { x: m.l - 8, y: m.t + (b + 0.72) * cell, "text-anchor": "end", "font-size": 8.5 }, svg);
+    t.textContent = lb;
+  });
+  const yl = el("text", { x: 14, y: m.t + ph / 2, "font-size": 9.5, transform: `rotate(-90 14 ${m.t + ph / 2})`, "text-anchor": "middle" }, svg);
+  yl.textContent = "readout band \u0394";
+  const cap = el("text", { x: m.l + (W - m.l - m.r) / 2, y: H - 10, "text-anchor": "middle", "font-size": 9.5 }, svg);
+  cap.textContent = "color = ranks the probed token above shuffled control (\u00d71 \u2192 \u00d74+) \u00b7 outlined diagonal = matched distance";
+  document.getElementById("chart-selmap").appendChild(svg);
+}
+
+accChart(); barChart(); faces(); swaps(); frenchGrid(); scatterChart(); normChart(); selHeat();
 </script>

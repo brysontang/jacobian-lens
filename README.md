@@ -86,6 +86,14 @@ layers {2, 5, …, 26}; full numbers in [`out/ghost_results.json`](out/ghost_res
   prediction 15% vs 9% (vocabulary-matched control) vs 7% (random); mildly
   dissolved ghosts are functional synonyms (33%, median rank 4), fully
   dissolved junk is a lossy shadow ([`out/ghost_patch.py`](out/ghost_patch.py)).
+- **The mean transport has no "from where."** An offset-resolved family
+  `K_Δ = E[∂h_l[p+Δ]/∂emb[p]]` (one matrix per lookback distance) is not
+  distance-selective: every band's readout leaks the *self* token, the only
+  above-chance cross-position signal is adjacent tokens at L20 (2.9×, gone
+  by L23), and explaining away the self component unmasks nothing. Averaged
+  over a corpus, attention transport carries no distance-indexed copy
+  structure — source attribution needs per-prompt Jacobians
+  ([`jlens/offset.py`](jlens/offset.py), [`out/eval_offset.py`](out/eval_offset.py)).
 
 Code: [`jlens/backward.py`](jlens/backward.py) (estimator + `BackwardLens`,
 mirroring `fit()`/`JacobianLens`), [`jlens/offset.py`](jlens/offset.py) (the
