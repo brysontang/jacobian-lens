@@ -2,6 +2,11 @@
 
 > **Reference implementation.** Not maintained and not accepting contributions.
 
+> **This fork adds a backward ("ghost-token") lens** — the original lens run in
+> reverse, decoding residual states back into *input*-token space. See
+> [the ghost-token lens](#this-fork-the-ghost-token-lens) below; upstream
+> README follows unchanged after that section.
+
 Companion code for [**Verbalizable Representations Form a Global Workspace in
 Language Models**](https://transformer-circuits.pub/2026/workspace/index.html).
 
@@ -30,6 +35,60 @@ other HuggingFace decoders adapt cleanly.
 *The ASCII-face example: selecting the `^` (nose) position shows the lens
 reading out "nose" at mid layers, although the word never appears in the
 prompt.*
+
+## This fork: the ghost-token lens
+
+The forward lens asks what a residual state is disposed to make the model
+**say**. This fork asks the mirror question: **what would the input have had
+to be to produce this state?** After self-attention mixes tokens together,
+what is each residual position still holding — and does the model ever
+*rearrange* its context in place, or only dissolve it?
+
+Fit the mirror-image Jacobian, rooted at the embedding output (position-free
+under RoPE):
+
+```
+K_l = E[∂h_l / ∂emb]
+```
+
+Then decode a residual vector `h` without ever inverting `K_l`: enumerate the
+vocabulary and score each token `v` by `⟨h, K_l e_v⟩ − ½‖K_l e_v‖²` — i.e.
+find the input embedding whose forward image under the average linearized
+dynamics lands nearest to `h`. The result is a **ghost input**: an "as-if
+context", not a causal reconstruction.
+
+![Ghost/forward crossover on Qwen3-0.6B](assets/ghost_crossover.svg)
+
+Findings on Qwen3-0.6B (24 WikiText fit prompts, 8 held-out eval prompts,
+layers {2, 5, …, 26}; full numbers in [`out/ghost_results.json`](out/ghost_results.json)):
+
+- **Input identity survives to layer 20, then hands off.** Ghost top-1
+  recovers the actual input token 93% at layer 2 and 49–74% through layer 20,
+  then collapses (6% at L23, 0% at L26) exactly as the forward lens's match
+  with the model's final prediction rises (13% → 36% → 70%). The crossover
+  sits at ~75–80% of depth. A no-Jacobian baseline is ~0% everywhere.
+- **Nothing moves — it dissolves in place.** Ghost top-1 is a token from
+  *elsewhere in the prompt* at most 4% of positions at any layer: when a
+  position stops holding its own token it drifts to tokens outside the prompt
+  entirely, never to a neighbour's. Dissolution, not permutation.
+- **Meaning outlives language.** On a French prompt the ghost input drifts
+  cross-lingually (`avec → WITH`, `marchands → merchants`); by layer 23 seven
+  scattered positions read `mercado` — the state remembers it's about a
+  market, not which words said so. The upstream ASCII face reconstructs
+  verbatim through layer 20 (the `^` stays a `^`).
+
+Code: [`jlens/backward.py`](jlens/backward.py) (estimator + `BackwardLens`,
+mirroring `fit()`/`JacobianLens`), fit/eval scripts and experiment notes in
+[`out/`](out/) ([`out/README-ghost.md`](out/README-ghost.md)).
+
+```python
+from jlens.backward import BackwardLens, fit_backward
+
+lens = fit_backward(model, prompts, target_layers=[2, 5, 8], checkpoint_path="out/b_ckpt.pt")
+ghost_logits, input_ids = lens.apply(model, "some prompt")  # {layer: [pos, vocab]}
+```
+
+---
 
 ## Install
 
