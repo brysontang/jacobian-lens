@@ -67,6 +67,8 @@ layers {2, 5, …, 26}; full numbers in [`out/ghost_results.json`](out/ghost_res
   then collapses (6% at L23, 0% at L26) exactly as the forward lens's match
   with the model's final prediction rises (13% → 36% → 70%). The crossover
   sits at ~75–80% of depth. A no-Jacobian baseline is ~0% everywhere.
+  (*Reinterpreted by the follow-up below: the collapse is a property of the
+  readout, not of the information.*)
 - **Nothing moves — it dissolves in place.** Ghost top-1 is a token from
   *elsewhere in the prompt* at most 4% of positions at any layer: when a
   position stops holding its own token it drifts to tokens outside the prompt
@@ -95,10 +97,39 @@ layers {2, 5, …, 26}; full numbers in [`out/ghost_results.json`](out/ghost_res
   structure — source attribution needs per-prompt Jacobians
   ([`jlens/offset.py`](jlens/offset.py), [`out/eval_offset.py`](out/eval_offset.py)).
 
+**Follow-up: the collapse is the readout drowning, not the information
+dying** ([`out/README-probe.md`](out/README-probe.md)):
+
+- **A trained linear probe on the same activations never collapses.** Ridge
+  probe → input-embedding recovers the token 32% / 28% top-1 (73% / 65%
+  top-10) at L23 / L26 where the ghost lens reads 6% / 0%, and holds on
+  surprise-stratified tokens where inverting output statistics can't help
+  (18.9% at L23 — identical to L20). Genuine erosion appears only at L26
+  (8.7% on surprising tokens). Identity stays linearly present essentially
+  to the end ([`out/probe_residency.py`](out/probe_residency.py)).
+- **The identity signal never shrinks — the competition explodes.** The
+  actual token's ghost score *rises* through L23 (158 → 978) while the best
+  competing score grows ~50× (153 → 8481); residual states also never leave
+  `col(K_l)` in bulk energy. The lens is shouted over, not blinded by
+  rotation ([`out/quadrant_analysis.py`](out/quadrant_analysis.py)).
+- **No displacement — the signals stack.** Ghost-survivors at L23 are nearly
+  as output-converged as base rate (0.28 vs 0.36), probe-based
+  identity↔convergence coupling is ~0, and the probe decodes identity ~2×
+  *better* on ghost-dead positions than on survivors: deep-layer ghost
+  survival marks residual alignment luck with `K_l`'s directions, not
+  preserved identity.
+- **Ghost-death is a clock, not a map.** By L23 the forward readout at
+  ghost-dead positions carries future-relevant semantic content (similarity
+  .30 vs .22 null to the next 32 tokens, surviving a predictability
+  control), but death timing is the global phase transition: per-position
+  event alignment is null at the 3-layer fit resolution
+  ([`out/workspace_marker.py`](out/workspace_marker.py)).
+
 Code: [`jlens/backward.py`](jlens/backward.py) (estimator + `BackwardLens`,
 mirroring `fit()`/`JacobianLens`), [`jlens/offset.py`](jlens/offset.py) (the
 offset-resolved `K_Δ` variant: "what, and from where"), fit/eval scripts and
-experiment notes in [`out/`](out/) ([`out/README-ghost.md`](out/README-ghost.md)).
+experiment notes in [`out/`](out/) ([`out/README-ghost.md`](out/README-ghost.md),
+[`out/README-probe.md`](out/README-probe.md)).
 The full interactive results page — charts, ghost grids, follow-up
 experiments — is self-contained at
 [`out/ghost-lens-results.html`](out/ghost-lens-results.html) (open locally in

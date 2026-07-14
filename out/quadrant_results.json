@@ -1,0 +1,183 @@
+{
+ "model": "Qwen/Qwen3-0.6B",
+ "layers": [
+  14,
+  17,
+  20,
+  23,
+  26
+ ],
+ "n_positions": 888,
+ "ghost_survives_rank_lt": 10,
+ "output_converged_def": "forward-lens top-1 == model final-layer top-1",
+ "quadrants": {
+  "20": {
+   "cells": {
+    "ghost_survives/converged": {
+     "n": 57,
+     "probe_top1_acc": 0.22807016968727112,
+     "mean_h_norm": 185.1085968017578,
+     "mean_margin": -29.839296340942383
+    },
+    "ghost_survives/not_converged": {
+     "n": 511,
+     "probe_top1_acc": 0.2837573289871216,
+     "mean_h_norm": 189.04737854003906,
+     "mean_margin": 108.25015258789062
+    },
+    "ghost_dead/converged": {
+     "n": 58,
+     "probe_top1_acc": 0.517241358757019,
+     "mean_h_norm": 180.50933837890625,
+     "mean_margin": -379.2096862792969
+    },
+    "ghost_dead/not_converged": {
+     "n": 262,
+     "probe_top1_acc": 0.42748090624809265,
+     "mean_h_norm": 182.20533752441406,
+     "mean_margin": -380.0101013183594
+    }
+   },
+   "n_ghost_survives": 568,
+   "n_converged": 115,
+   "frac_converged_overall": 0.1295045018196106,
+   "frac_converged_given_ghost_survives": 0.10035211592912674
+  },
+  "23": {
+   "cells": {
+    "ghost_survives/converged": {
+     "n": 41,
+     "probe_top1_acc": 0.17073170840740204,
+     "mean_h_norm": 333.43267822265625,
+     "mean_margin": -93.99851989746094
+    },
+    "ghost_survives/not_converged": {
+     "n": 108,
+     "probe_top1_acc": 0.15740740299224854,
+     "mean_h_norm": 341.4371032714844,
+     "mean_margin": -16.11072540283203
+    },
+    "ghost_dead/converged": {
+     "n": 275,
+     "probe_top1_acc": 0.3563636243343353,
+     "mean_h_norm": 340.0553283691406,
+     "mean_margin": -2236.455810546875
+    },
+    "ghost_dead/not_converged": {
+     "n": 464,
+     "probe_top1_acc": 0.3534482717514038,
+     "mean_h_norm": 356.6839599609375,
+     "mean_margin": -2476.841064453125
+    }
+   },
+   "n_ghost_survives": 149,
+   "n_converged": 316,
+   "frac_converged_overall": 0.3558558523654938,
+   "frac_converged_given_ghost_survives": 0.2751677930355072
+  },
+  "26": {
+   "cells": {
+    "ghost_survives/converged": {
+     "n": 1,
+     "probe_top1_acc": 0.0,
+     "mean_h_norm": 440.1195068359375,
+     "mean_margin": -408.45068359375
+    },
+    "ghost_survives/not_converged": {
+     "n": 1,
+     "probe_top1_acc": 0.0,
+     "mean_h_norm": 556.3607177734375,
+     "mean_margin": -1096.59521484375
+    },
+    "ghost_dead/converged": {
+     "n": 625,
+     "probe_top1_acc": 0.2768000066280365,
+     "mean_h_norm": 600.7852783203125,
+     "mean_margin": -7970.99462890625
+    },
+    "ghost_dead/not_converged": {
+     "n": 261,
+     "probe_top1_acc": 0.28735631704330444,
+     "mean_h_norm": 605.293212890625,
+     "mean_margin": -8021.72509765625
+    }
+   },
+   "n_ghost_survives": 2,
+   "n_converged": 626,
+   "frac_converged_overall": 0.704954981803894,
+   "frac_converged_given_ghost_survives": 0.5
+  }
+ },
+ "trajectory": {
+  "n_ghost_fails_probe_ok_at_L23": 262,
+  "layers": {
+   "14": {
+    "mean_s_actual": 158.045654296875,
+    "mean_s_top1_competitor": 152.64340209960938,
+    "mean_margin": 5.402249813079834,
+    "mean_h_norm": 52.99226760864258,
+    "ghost_fails_probe_ok_at_L23": {
+     "mean_s_actual": 115.92084503173828,
+     "mean_s_top1_competitor": 121.21098327636719,
+     "mean_h_norm": 50.80881118774414
+    }
+   },
+   "17": {
+    "mean_s_actual": 451.28778076171875,
+    "mean_s_top1_competitor": 411.7288818359375,
+    "mean_margin": 39.55888366699219,
+    "mean_h_norm": 94.98200225830078,
+    "ghost_fails_probe_ok_at_L23": {
+     "mean_s_actual": 311.43731689453125,
+     "mean_s_top1_competitor": 288.5832824707031,
+     "mean_h_norm": 91.85226440429688
+    }
+   },
+   "20": {
+    "mean_s_actual": 944.8455810546875,
+    "mean_s_top1_competitor": 1021.3565673828125,
+    "mean_margin": -76.51106262207031,
+    "mean_h_norm": 186.2181854248047,
+    "ghost_fails_probe_ok_at_L23": {
+     "mean_s_actual": 458.2734375,
+     "mean_s_top1_competitor": 670.6514282226562,
+     "mean_h_norm": 181.58815002441406
+    }
+   },
+   "23": {
+    "mean_s_actual": 977.7468872070312,
+    "mean_s_top1_competitor": 2970.84765625,
+    "mean_margin": -1993.1007080078125,
+    "mean_h_norm": 348.6064758300781,
+    "ghost_fails_probe_ok_at_L23": {
+     "mean_s_actual": 309.24481201171875,
+     "mean_s_top1_competitor": 2915.940673828125,
+     "mean_h_norm": 349.5118713378906
+    }
+   },
+   "26": {
+    "mean_s_actual": 511.540283203125,
+    "mean_s_top1_competitor": 8481.1884765625,
+    "mean_margin": -7969.64697265625,
+    "mean_h_norm": 601.8792724609375,
+    "ghost_fails_probe_ok_at_L23": {
+     "mean_s_actual": 546.1199951171875,
+     "mean_s_top1_competitor": 8825.73828125,
+     "mean_h_norm": 615.2437133789062
+    }
+   }
+  }
+ },
+ "correlations": {
+  "20": {
+   "probe_identity_vs_convergence": 0.08786917477846146,
+   "ghost_identity_vs_convergence": -0.1936229020357132,
+   "convention": "-log10(rank+1) both sides; positive = identity-strong positions are more converged (coexistence)"
+  },
+  "23": {
+   "probe_identity_vs_convergence": 0.012489684857428074,
+   "ghost_identity_vs_convergence": -0.051485467702150345,
+   "convention": "-log10(rank+1) both sides; positive = identity-strong positions are more converged (coexistence)"
+  }
+ }
+}

@@ -10,5 +10,8 @@ dist/
 
 # jlens outputs
 *.pt
+*.log
 slice*.html
 slices/
+
+.DS_Store

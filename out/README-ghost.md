@@ -45,6 +45,10 @@ this because it projects everything onto "next token".
   subtracting the self component K₀e_self. Appends into `offset_results.json`.
 - `backward_lens.pt`, `forward_lens.pt`, `offset_lens.pt` — fitted lenses
   (not committed, 18–88 MB; reproduce with `fit_ghost.py` / `fit_offset.py`).
+- `probe_residency.py`, `quadrant_analysis.py`, `workspace_marker.py` —
+  follow-up experiments (2026-07-14) reinterpreting the collapse; results in
+  `probe_residency.json` / `quadrant_results.json` / `workspace_results.json`,
+  written up in `README-probe.md`.
 
 ## Results (2026-07-07)
 
@@ -127,6 +131,19 @@ routing is content-dependent, so averaging over prompts/positions destroys
 source attribution. This extends "dissolution, not permutation" to the
 transport domain: even mid-migration a position never becomes readable as
 its neighbors.
+
+## Follow-up (2026-07-14): the collapse reinterpreted
+
+The L23–26 collapse in result 1 turned out to be a property of the *readout*,
+not the information: a trained linear probe on the same activations recovers
+input identity 32%/28% top-1 at L23/L26 (surviving a predictability control),
+the actual token's ghost score *rises* through L23 while the best competing
+score grows ~50×, and per-position analysis rejects displacement in favor of
+identity and output signals coexisting in the same residual vector.
+Ghost-death is a global phase clock whose "junk" readouts are genuinely
+future-informative at the population level, but not a per-position workspace
+marker at this fit resolution. Full setup, tables, and caveats:
+`README-probe.md`.
 
 ## Next: per-prompt Jacobians
 
